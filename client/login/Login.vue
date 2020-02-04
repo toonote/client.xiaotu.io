@@ -49,10 +49,10 @@ export default {
                     }
                 });
                 console.log(response.data);
-                /*ctx.root.$webClient.$emit('user.login', {
-                    userInfo: response.data
-                });*/
+                localStorage.setItem('TOONOTE-USER', JSON.stringify(response.data));
+                location.href = '/main.html';
             }catch(e){
+                alert('登录失败：' + e.message);
                 console.log(e);
                 return false;
             }
