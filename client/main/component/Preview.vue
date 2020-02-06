@@ -8,7 +8,7 @@
 	line-height: 28px;
 	background:#fff;
 }
-@import "../style/htmlbody.css";
+@import "../styles/htmlbody.css";
 </style>
 
 <template>
@@ -28,17 +28,19 @@
 
 <script>
 // import 'highlight.js/styles/github-gist.css';
-import debug from '../modules/util/debug';
+// import debug from '../modules/util/debug';
 import 'highlight.js/styles/tomorrow.css';
-import * as mdRender from '../modules/util/mdRender';
-import io from '../modules/util/io';
-import eventHub from '../modules/util/eventHub';
-import Menu from '../modules/menu/electron';
-import {uiData} from '../modules/controller';
-import scroll from '../modules/scroll';
+import * as mdRender from '../utils/mdRender';
+// import io from '../modules/util/io';
+// import eventHub from '../modules/util/eventHub';
+// import Menu from '../modules/menu/electron';
+// import {uiData} from '../modules/controller';
+import scroll from '../utils/scroll';
 
-const logger = debug('preview');
-const menu = new Menu();
+// const logger = debug('preview');
+const logger = console.log;
+// const menu = new Menu();
+const menu = {};
 
 // 滚动时源码和渲染后位置的对应表
 let scrollMap = [];
@@ -49,7 +51,7 @@ export default {
 	methods: {
 		renderHtml() {
 			console.time('renderHtml');
-			const html = mdRender.basicRender(this.currentNoteContent.data)
+			const html = mdRender.basicRender(this.content)
 			console.timeEnd('renderHtml');
 			return html;
 		},
@@ -58,8 +60,8 @@ export default {
 			// 链接
 			if($target.tagName === 'A' && /^https?:\/\//.test($target.href)){
 				logger('click on link');
-				let shell = require('electron').shell;
-				shell.openExternal($target.href);
+				// let shell = require('electron').shell;
+				// shell.openExternal($target.href);
 				e.preventDefault();
 				this.currentContextAttachment = {};
 			}else if($target.closest('.tn-attachment')){
@@ -104,7 +106,7 @@ export default {
 				if(!$attachment) return;
 				src = $attachment.dataset.src;
 			}
-			require('electron').shell.openExternal(src);
+			// require('electron').shell.openExternal(src);
 		},
 		previewAttachmentByKeyboard(e){
 			logger('previewAttachmentByKeyboard');
@@ -119,7 +121,7 @@ export default {
 		previewAttachment(data){
 			logger('previewAttachment');
 			const src = data.targetSrc.replace(/^file:\/\//,'');
-			require('electron').remote.getCurrentWindow().previewFile(src, data.title);
+			// require('electron').remote.getCurrentWindow().previewFile(src, data.title);
 		},
 		// 将预览区滚动到和源码位置一样
 		scrollToSourceLine(row) {
@@ -161,14 +163,14 @@ export default {
 		}
 	},
 	watch:{
-		currentNoteContent: {
+		content: {
 			handler(){
-				if(!this.currentNoteContent.data){
+				if(!this.content){
 					this.html = '';
 					return;
 				}
 				// 如果预览区没显示，则不渲染
-				if(!this.layout.data.preview){
+				if(!this.layout.preview){
 					return;
 				}
 				this.html = this.renderHtml();
@@ -177,7 +179,7 @@ export default {
 		},
 		layout: {
 			handler(){
-				if(this.layout.data.preview){
+				if(this.layout.preview){
 					this.html = this.renderHtml();
 				}
 			},
@@ -189,17 +191,16 @@ export default {
 			});
 		}
 	},
+	props: ['content', 'layout'],
 	data(){
 		var data = {
-			currentNoteContent: uiData.currentNoteContent,
 			currentContextAttachment: {},
-			layout: uiData.layout,
 			html: ''
 		};
 		return data;
 	},
 	mounted(){
-		eventHub.on('attachmentOpen', (data) => {
+		/* eventHub.on('attachmentOpen', (data) => {
 			this.openAttachment(data.targetSrc);
 		});
 		eventHub.on('attachmentPreview', (data) => {
@@ -207,12 +208,12 @@ export default {
 		});
 		eventHub.on('attachmentOpenInFinder', (data) => {
 			const src = data.targetSrc.replace(/^file:\/\//,'');
-			require('electron').shell.showItemInFolder(src);
+			// require('electron').shell.showItemInFolder(src);
 		});
 		eventHub.on('attachmentSave', (data) => {
 			const src = data.targetSrc.replace(/^file:\/\//,'');
 			io.saveAs(src, data.targetTitle);
-		});
+		}); */
 		// console.log('[preview] mounted', this, this.$store);
 
 	}

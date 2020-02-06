@@ -1,0 +1,183 @@
+.htmlBody{
+	font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
+	line-height: 28px;
+	font-size: 14px;
+	color:#4D4D4C;
+	letter-spacing: 1px;
+	padding:0 20px;
+}
+.htmlBody:focus{
+	outline: 0 none;
+}
+/*标题*/
+.htmlBody h1,.htmlBody h2,.htmlBody h3,
+.htmlBody h4,.htmlBody h5,.htmlBody h6{
+	margin:16px 0;
+	color:#718C00;
+	font-weight: normal;
+}
+.htmlBody h1{
+	font-size: 20px;
+}
+.htmlBody h2{
+	font-size: 18px;
+}
+.htmlBody h3{
+	font-size: 16px;
+}
+.htmlBody h4,.htmlBody h5,.htmlBody h6{
+	font-size: 14px;
+}
+/*表格*/
+.htmlBody table{
+	margin-bottom: 28px;
+	margin-left:auto;
+	margin-right:auto;
+	/*width:80%;*/
+	width:100%;
+	border:1px solid #E0E0E0;
+	border-collapse: collapse;
+}
+.htmlBody table th,
+.htmlBody table td{
+	padding: 3px;
+	border:1px solid #E0E0E0;
+}
+.htmlBody table th{
+	background:#F0F0F0;
+}
+
+/*段落*/
+.htmlBody p{
+	margin-bottom: 28px;
+	/*text-indent: 34px;*/
+}
+
+/*列表*/
+.htmlBody ul,.htmlBody ol{
+	margin-bottom: 28px;
+	/*padding-left:34px;*/
+	/*list-style-position: inside;*/
+	margin-left: 2em;
+	list-style-position: outside;
+}
+.htmlBody li > p{
+	text-indent: 0;
+	margin-bottom: 0;
+}
+.htmlBody ul ul,
+.htmlBody ul ol,
+.htmlBody ol ol,
+.htmlBody ol ul{
+	padding-left: 34px;
+	margin-bottom: 0;
+}
+/*todo*/
+.htmlBody li.todo{
+	list-style: none;
+	margin-left: -1.4em;
+}
+.htmlBody li.todo.done{
+	color:#aaa;
+}
+.htmlBody li.todo.done > p::first-letter{
+	color:green;
+}
+.htmlBody li.todo.doing > p::first-letter{
+	/*color:#aaa;*/
+}
+/*.htmlBody li.todo.doing::before{
+	content:'☐';
+}
+.htmlBody li.todo.done::before{
+	content:'✔';
+}
+.htmlBody li.todo p{
+	text-indent:-1.5em;
+}*/
+
+/*代码*/
+.htmlBody code{
+	background:#F0F0F0;
+	padding:0 5px;;
+	font-family: source-code-pro, Monaco, Menlo, "Ubuntu Mono", Consolas, monospace;
+}
+.htmlBody pre code{
+	/*margin-left:34px;*/
+	margin-bottom: 28px;
+	display: block;
+	background:#fff;
+	border:1px solid #E0E0E0;
+	overflow-x: scroll;
+	font-size: 13px;
+}
+/*引用*/
+.htmlBody blockquote{
+	/*margin-left:34px;*/
+	font-size:13px;
+	margin-bottom: 28px;
+	padding:0 10px;
+	background:#F0F0F0;
+	border-left:3px solid #E0E0E0;
+}
+.htmlBody blockquote p{
+	text-indent: 0;
+	margin-bottom: 14px;
+}
+/*图片*/
+.htmlBody img{
+	max-width: 100%;
+	border: 1px solid #E0E0E0;
+	padding: 1px;
+}
+/* 附件 */
+.htmlBody .tn-attachment{
+	/* border: 1px solid #ddd; */
+	background:#f0f0f0;
+	padding: 10px;
+	user-select: none;
+}
+.htmlBody .tn-attachment-icon{
+	width: 40px;
+    height: 40px;
+	background: url(../images/filetype.png) no-repeat;
+	background-size: 400px 160px;
+	display: inline-block;
+	vertical-align: top;
+}
+.htmlBody .tn-attachment-icon-sketch{
+	background-position: 0 0;
+}
+.htmlBody .tn-attachment-icon-pdf{
+	background-position: -40px 0;
+}
+.htmlBody .tn-attachment-icon-zip{
+	background-position: -80px 0;
+}
+.htmlBody .tn-attachment-icon-docx{
+	background-position: -120px 0;
+}
+.htmlBody .tn-attachment-icon-xlsx{
+	background-position: -160px 0;
+}
+.htmlBody .tn-attachment-icon-pptx{
+	background-position: -200px 0;
+}
+.htmlBody .tn-attachment-info{
+	display: inline-block;
+	vertical-align: top;
+	height: 40px;
+}
+.htmlBody .tn-attachment-info p{
+	line-height: 1.4em;
+	margin-bottom: .3em;
+}
+.htmlBody .tn-attachment-info .tn-attachment-size{
+	color: #999;
+}
+
+/*链接*/
+.htmlBody a{
+	color:#718C00;
+	text-decoration: none;
+}

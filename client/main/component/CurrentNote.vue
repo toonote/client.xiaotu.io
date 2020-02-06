@@ -11,7 +11,12 @@
         ></editor>
     </transition>
     <transition name="slide-flex">
-        <!-- <preview v-show="layout.data.preview" ref="preview"></preview> -->
+        <preview 
+            v-show="layout.preview" 
+            ref="preview" 
+            :content="content"
+            :layout="layout"
+        ></preview>
     </transition>
 </section>
 </template>
@@ -26,7 +31,7 @@ export default {
     components: {
         // Editor: import('@toonote/md-editor'),
         Editor,
-        // Preview 
+        Preview,
     },
     props: ['layout'],
     data(){
@@ -54,6 +59,7 @@ export default {
 </script>
 <style scoped>
 .currentNote{
+    display: flex;
     flex: 1;
 }
 </style>
