@@ -14,8 +14,6 @@
 	<!-- 笔记列表展示 -->
 	<current-notebook
 		v-show="!searchKeyword"
-		:notebook="currentNotebook" 
-		:current-note="currentNote"
 	></current-notebook>
 </section>
 </template>
@@ -305,59 +303,6 @@ h2 .operate{
 h2:hover .operate{
 	opacity: 1;
 }
-.wrapper{
-	line-height: 24px;
-	padding-top: 10px;
-}
-.wrapper h2,
-.wrapper .notFound{
-	font-size:12px;
-	padding-left:15px;
-	font-weight: normal;
-}
-.wrapper ul{
-	list-style: none;
-}
-.wrapper li{
-	font-size:13px;
-	text-indent: 25px;
-	/*padding-left:25px;*/
-	cursor:default;
-	white-space: nowrap;
-	overflow: hidden;
-}
-.wrapper li li{
-	text-indent: 44px;
-	transition: padding-top .4s ease-in-out, padding-bottom .4s ease-in-out;
-}
-.wrapper li.active{
-	background: #CECECE;
-}
-.wrapper li.movingUp{
-	padding-top: 24px;
-}
-.wrapper li.movingDown{
-	padding-bottom: 24px;
-}
-.wrapper li.note::before{
-	padding-right:3px;
-	background-image:url(../images/icon-file.png);
-}
-.wrapper li.folder::before{
-	padding-right:3px;
-	background-image:url(../images/icon-folder.png);
-}
-.wrapper li.folder-open::before{
-	padding-right:3px;
-	background-image:url(../images/icon-folder-open.png);
-}
-.wrapper li .categoryInput{
-	width: calc(100% - 70px);
-}
-/* .wrapper .note-list-move {
-	transition: transform .4s;
-} */
-
 .searchWrapper input{
 	display: block;
     border: 0 none;

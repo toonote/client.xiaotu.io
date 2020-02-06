@@ -16,7 +16,6 @@
             <span v-show="currentEditCategoryId!==category.id">{{category.title}}</span>
             <input
                 class="titleInput categoryInput"
-                v-focus-input
                 v-show="currentEditCategoryId===category.id"
                 :value="category.title"
                 @keydown.enter="categoryRename(category.id, $event.target.value)"
@@ -74,7 +73,7 @@ export default {
 		isActive(noteOrCategoryId){
 			let ret = false;
 			// 当前笔记
-			if(this.currentNote.data && noteOrCategoryId === this.currentNote.data.id){
+			if(this.currentNote&& noteOrCategoryId === this.currentNote.id){
 				ret = true;
 			}
 			// 当前右键笔记

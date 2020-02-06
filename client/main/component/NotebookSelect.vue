@@ -30,15 +30,9 @@
 
 
 <script>
-/* import {
-	uiData,
-	switchCurrentNotebook,
-	createNotebook,
-	recoverLastState
-} from '../modules/controller';
- */
 import restClient, {parseResponse} from '../utils/restClient';
 import idGen from '../utils/idGen';
+import eventBus from '../utils/eventBus';
 
 export default {
 	data(){
@@ -61,7 +55,9 @@ export default {
 	},
 	methods: {
 		switchCurrentNotebook(notebookId){
-			switchCurrentNotebook(notebookId);
+			if(!notebookId) return;
+			localStorage.setItem('TOONOTE-LAST-NOTEBOOK-ID', notebookId);
+			eventBus.$emit('NOTEBOOK_SWITCH', notebookId);
 		},
 		enterCreateNotebook(){
 			this.newNotebook.isCreating = true;

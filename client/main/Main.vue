@@ -1,5 +1,5 @@
 <template>
-<section class="login">
+<section>
     <div class="main" :class="{withSidebar:layout.sidebar}">
 		<transition name="slide">
 			<sidebar v-show="layout.sidebar"></sidebar>
@@ -18,13 +18,14 @@
 			<preview v-show="layout.data.preview" ref="preview"></preview>
 		</transition> -->
 	</div>
-	<notebook-select></notebook-select>
+	<notebook-select v-show="!currentNotebook"></notebook-select>
 	<!-- <version></version> -->
 </section>
 </template>
 <script lang="ts">
 import Sidebar from './component/Sidebar.vue';
 import NotebookSelect from './component/NotebookSelect.vue';
+import eventBus from './utils/eventBus';
 // import User from './component/User.vue';
 // import User from './component/User.vue';
 // import User from './component/User.vue';
@@ -40,6 +41,7 @@ export default {
                 editor: true,
                 preview: true,
             },
+            currentNotebook: '',
             showLoginImage: false,
             loginQrCode: '',
             BASE_URL: process.env.NODE_ENV === 'production' ?
@@ -52,7 +54,9 @@ export default {
         NotebookSelect,
     },
     mounted(){
-        // this.initWxLogin();
+        eventBus.$on('NOTEBOOK_SWITCH', (notebookId) => {
+            this.currentNotebook = notebookId;
+        });
     },
     methods:{
         validateLogin: async function(){
@@ -118,11 +122,15 @@ export default {
 
 </script>
 <style>
+*{
+    margin:0;
+    padding:0;
+}
 .login{
     position: absolute;
     left: 0;
     top: 0;
-    width: 100%;
+    /* width: 100%; */
     height: 100%;
     background: white;
     z-index: 1000;
@@ -135,7 +143,7 @@ export default {
 	color: #333;
 }
 
-.wrapper{
+/* .wrapper{
     display: flex;
     height: 100%;
     align-items: center;
@@ -143,7 +151,7 @@ export default {
     margin: 0 auto;
 }
 
-
+ */
 .login .loginImage{
     padding: 0 75px;
     flex: 7 1 auto;
