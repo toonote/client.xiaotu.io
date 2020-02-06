@@ -10,6 +10,7 @@ module.exports = {
     watch: process.env.NODE_ENV !== 'production',
     entry: {
         'login': './client/login.ts',
+        'main': './client/main.ts',
     },
     output: {
         path: path.resolve(__dirname, './dist'),
@@ -71,11 +72,20 @@ module.exports = {
     }, */
     devtool: '#eval-source-map',
     plugins: [
+        new webpack.DefinePlugin({
+            'TOONOTE_VERSION': '"' + require(path.join(__dirname, './package.json')).version + '"', 
+        }),
         new VueLoaderPlugin(),
         new HtmlWebpackPlugin({
             template: path.join(__dirname, './client/login.html'),
             filename: path.join(__dirname, './dist/login.html'),
             chunks: ['login'],
+            alwaysWriteToDisk: true
+        }),
+        new HtmlWebpackPlugin({
+            template: path.join(__dirname, './client/main.html'),
+            filename: path.join(__dirname, './dist/main.html'),
+            chunks: ['main'],
             alwaysWriteToDisk: true
         }),
         new HtmlWebpackHarddiskPlugin(),
