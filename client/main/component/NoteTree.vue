@@ -61,6 +61,7 @@
 // import stat from '../modules/util/stat';
 // import eventHub from '../modules/util/eventHub';
 import {throttle} from 'lodash';
+import eventBus from '../utils/eventBus';
 
 let movingOverDirection;
 
@@ -73,7 +74,7 @@ export default {
 		isActive(noteOrCategoryId){
 			let ret = false;
 			// 当前笔记
-			if(this.currentNote&& noteOrCategoryId === this.currentNote.id){
+			if(this.currentNoteId && noteOrCategoryId === this.currentNoteId){
 				ret = true;
 			}
 			// 当前右键笔记
@@ -139,12 +140,11 @@ export default {
 			};
 		},
 		switchCurrentNote(noteId){
-			if(noteId === this.currentNote.data.id) return;
-			stat.ga('send', 'event', 'note', 'switchCurrentNote', 'click');
+			if(noteId === this.currentNoteId) return;
+            // stat.ga('send', 'event', 'note', 'switchCurrentNote', 'click');
 			console.log('switchCurrentNote');
-			switchCurrentNote(noteId);
-			// this.$store.dispatch('switchCurrentNoteById', noteId);
-			// eventHub.$emit('currentNoteChange', noteId);
+            eventBus.$emit('NOTE_SWITCH', noteId);
+            this.currentNoteId = noteId;
 		},
 		exitNotebook(){
 			exitNotebook();
@@ -271,6 +271,7 @@ export default {
     },
 	data(){
 		return {
+            currentNoteId: '',
 			currentContextMenuNoteId: '',
 			currentContextMenuCategoryId: '',
 			currentEditCategoryId: '',

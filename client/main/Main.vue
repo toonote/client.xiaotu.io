@@ -1,22 +1,10 @@
 <template>
-<section>
+<section class="mainContainer">
     <div class="main" :class="{withSidebar:layout.sidebar}">
 		<transition name="slide">
 			<sidebar v-show="layout.sidebar"></sidebar>
 		</transition>
-		<!-- <transition name="slide-flex">
-			<editor
-				v-show="layout.data.editor"
-				@content-change="contentChange"
-				@save-attachment="saveAttachment"
-				@line-scroll="lineScroll"
-				:content="content"
-				:tn-event="tnEvent"
-			></editor>
-		</transition>
-		<transition name="slide-flex">
-			<preview v-show="layout.data.preview" ref="preview"></preview>
-		</transition> -->
+        <current-note :layout="layout"></current-note>
 	</div>
 	<notebook-select v-show="!currentNotebook"></notebook-select>
 	<!-- <version></version> -->
@@ -25,6 +13,7 @@
 <script lang="ts">
 import Sidebar from './component/Sidebar.vue';
 import NotebookSelect from './component/NotebookSelect.vue';
+import CurrentNote from './component/CurrentNote.vue';
 import eventBus from './utils/eventBus';
 // import User from './component/User.vue';
 // import User from './component/User.vue';
@@ -52,6 +41,7 @@ export default {
     components: {
         Sidebar,
         NotebookSelect,
+        CurrentNote,
     },
     mounted(){
         eventBus.$on('NOTEBOOK_SWITCH', (notebookId) => {
@@ -126,48 +116,22 @@ export default {
     margin:0;
     padding:0;
 }
-.login{
-    position: absolute;
-    left: 0;
-    top: 0;
-    /* width: 100%; */
+html,body{
     height: 100%;
-    background: white;
-    z-index: 1000;
 }
-.login a:link{
-	color: #999;
-	text-decoration: none;
+.icon::before{
+	content:' ';
+	display: inline-block;
+	width:16px;
+	height:16px;
+	vertical-align: sub;
+	background-size:16px 16px;
+	background-repeat:no-repeat;
 }
-.login a:hover{
-	color: #333;
+.mainContainer, .main{
+    height: 100%;
 }
-
-/* .wrapper{
+.main{
     display: flex;
-    height: 100%;
-    align-items: center;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
- */
-.login .loginImage{
-    padding: 0 75px;
-    flex: 7 1 auto;
-}
-.login .loginImage img{
-    max-width: 100%;
-    display: block;
-}
-.login .loginBody{
-    padding: 0 75px;
-    flex: 3 0 450px;
-}
-.login .loginBody .qrCode{
-    width: 300px;
-}
-.login .loginBody .qrCode img{
-    max-width: 100%;
 }
 </style>
