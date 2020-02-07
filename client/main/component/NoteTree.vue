@@ -43,7 +43,7 @@
         </li>
     </ul>
     <v-contextmenu @hide="hideCategoryContextMenu" ref="categoryContextMenu">
-		<v-contextmenu-item @click="newNote('menu')">新建笔记</v-contextmenu-item>
+		<v-contextmenu-item @click="newNote('categoryMenu')">新建笔记</v-contextmenu-item>
 		<v-contextmenu-item>重命名</v-contextmenu-item>
 		<v-contextmenu-item @click="deleteCategory">删除</v-contextmenu-item>
 	</v-contextmenu>
@@ -51,7 +51,7 @@
 		<v-contextmenu-item @click="openNote">打开</v-contextmenu-item>
 		<v-contextmenu-item @click="deleteNote">删除</v-contextmenu-item>
 		<v-contextmenu-item>历史版本</v-contextmenu-item>
-		<v-contextmenu-item @click="newNote('menu')">新建笔记</v-contextmenu-item>
+		<v-contextmenu-item @click="newNote('noteMenu')">新建笔记</v-contextmenu-item>
 	</v-contextmenu>
 </section>
 </template>
@@ -74,6 +74,7 @@
 // import {throttle} from 'lodash';
 import eventBus from '../utils/eventBus';
 import restClient, {parseResponse} from '../utils/restClient';
+import idGen from '../utils/idGen';
 
 let movingOverDirection;
 
@@ -246,8 +247,31 @@ export default {
         openNote(){
             this.switchCurrentNote(this.currentContextMenuNoteId);
         },
-        newNote(){
-
+        newNote(from){
+            let targetCategory;
+            this.notebook.categories.forEach((category) => {
+                if(from === 'categoryMenu'){
+                    if(category.id === this.currentContextMenuCategoryId){
+                        targetCategory = category;
+                    }
+                }else{
+                    category.notes.forEach((note) => {
+                        if(note.id === this.currentContextMenuNoteId){
+                            targetCategory = category;
+                        }
+                    });
+                }
+            });
+            if(!targetCategory) return;
+            restClient.note.create({
+                title: '新笔记',
+                content: '# ' + targetCategory.title + '\\新笔记',
+                id: idGen(),
+                categoryId: targetCategory.id,
+                notebookId: this.notebook.id,
+            }).then(() => {
+                eventBus.$emit('NOTEBOOK_REFRESH');
+            });
         },
         deleteCategory(noteId){
 
