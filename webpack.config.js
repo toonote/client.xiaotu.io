@@ -77,12 +77,14 @@ module.exports = {
         }),
         new VueLoaderPlugin(),
         new HtmlWebpackPlugin({
+            favicon: path.join(__dirname, './client/favicon.ico'),
             template: path.join(__dirname, './client/login.html'),
             filename: path.join(__dirname, './dist/login.html'),
             chunks: ['login'],
             alwaysWriteToDisk: true
         }),
         new HtmlWebpackPlugin({
+            favicon: path.join(__dirname, './client/favicon.ico'),
             template: path.join(__dirname, './client/main.html'),
             filename: path.join(__dirname, './dist/main.html'),
             chunks: ['main'],

@@ -4,7 +4,6 @@
         <editor
             v-show="layout.editor"
             v-model="content"
-            @content-change="contentChange"
             @save-attachment="saveAttachment"
             @line-scroll="lineScroll"
             :tn-event="tnEvent"
@@ -26,6 +25,7 @@ import Preview from './Preview.vue';
 import Editor from '@toonote/md-editor';
 import eventBus from '../utils/eventBus';
 import restClient, {parseResponse} from '../utils/restClient';
+import throttle from 'lodash/throttle';
 
 export default {
     components: {
@@ -40,13 +40,23 @@ export default {
             content: '',
         }
     },
+    watch:{
+        content: throttle(function(content: string){
+            if(content === this.currentNote.content) return;
+            restClient.note.update(this.currentNote.id, {
+                content,
+            }).then(() => {
+                this.currentNote.content = content;
+            });
+        }, 1000, {leading: false}),
+    },
     methods: {
-        contentChange(){},
         tnEvent(){},
         saveAttachment(){},
         lineScroll(){},
         async switchNote(noteId: string){
             const note = parseResponse(await restClient.note.find(noteId));
+            this.currentNote = note;
             this.content = note.content;
         }
     },

@@ -60,7 +60,7 @@
 // import Menu from '../modules/menu/electron';
 // import stat from '../modules/util/stat';
 // import eventHub from '../modules/util/eventHub';
-import {throttle} from 'lodash';
+// import {throttle} from 'lodash';
 import eventBus from '../utils/eventBus';
 
 let movingOverDirection;
