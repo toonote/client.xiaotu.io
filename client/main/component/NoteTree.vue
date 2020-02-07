@@ -8,9 +8,9 @@
             v-for="category in notebook.categories"
             :key="category.id"
             :class="{active:isActive(category.id), 'folder-open':!isFold(category.id)}"
+            @contextmenu.prevent.stop="showCategoryContextMenu($event, category.id)"
             @dragstart.stop="dragStart($event, 'category', category)"
             @dragover.stop="dragStart($event, 'category', category)"
-            @contextmenu.stop="showCategoryContextMenu(category.id)"
             @click="switchFold(category.id)"
         >
             <span v-show="currentEditCategoryId!==category.id">{{category.title}}</span>
@@ -34,14 +34,25 @@
                     v-for="note in category.notes"
                     :key="note.id"
                     :class="{active:isActive(note.id), movingUp:movingOverClass(note, 'up'), movingDown:movingOverClass(note, 'down')}"
+                    @contextmenu.prevent.stop="showNoteContextMenu($event, note.id)"
                     @click.stop="switchCurrentNote(note.id)"
-                    @contextmenu.stop="showNoteContextMenu(note.id)"
                     @dragstart.stop="dragStart($event, 'note', note)"
                     @dragover.stop.prevent="dragOver($event, 'note', note)"
                 >{{note.title}}</li>
             </transition-group>
         </li>
     </ul>
+    <v-contextmenu @hide="hideCategoryContextMenu" ref="categoryContextMenu">
+		<v-contextmenu-item @click="newNote('menu')">新建笔记</v-contextmenu-item>
+		<v-contextmenu-item>重命名</v-contextmenu-item>
+		<v-contextmenu-item @click="deleteCategory">删除</v-contextmenu-item>
+	</v-contextmenu>
+    <v-contextmenu @hide="hideNoteContextMenu" ref="noteContextMenu">
+		<v-contextmenu-item @click="openNote">打开</v-contextmenu-item>
+		<v-contextmenu-item @click="deleteNote">删除</v-contextmenu-item>
+		<v-contextmenu-item>历史版本</v-contextmenu-item>
+		<v-contextmenu-item @click="newNote('menu')">新建笔记</v-contextmenu-item>
+	</v-contextmenu>
 </section>
 </template>
 
@@ -62,6 +73,7 @@
 // import eventHub from '../modules/util/eventHub';
 // import {throttle} from 'lodash';
 import eventBus from '../utils/eventBus';
+import restClient, {parseResponse} from '../utils/restClient';
 
 let movingOverDirection;
 
@@ -154,59 +166,30 @@ export default {
 			this.currentEditCategoryId = '';
 			categoryRename(categoryId, newTitle);
 		},
-		showCategoryContextMenu(categoryId){
+		showCategoryContextMenu($event, categoryId){
 			// console.log('contextmenu');
-			stat.ga('send', 'event', 'note', 'showCategoryContextMenu');
-			this.currentContextMenuCategoryId = categoryId;
-			setTimeout(() => {
-				menu.showContextMenu([{
-					title:'重命名',
-					event:'categoryRename'
-				},{
-					title:'删除',
-					event:'categoryDelete'
-				},{
-					title:'新建',
-					event:'categoryCreate'
-				}], {
-					targetType: 'category',
-					targetId: categoryId,
-					from: 'sidebar',
-				});
-				setTimeout(()=>{
-					this.currentContextMenuCategoryId = '';
-				},30);
-			},30);
+			// stat.ga('send', 'event', 'note', 'showCategoryContextMenu');
+            this.currentContextMenuCategoryId = categoryId;
+            this.$refs.categoryContextMenu.show({
+                top: $event.pageY,
+                left: $event.pageX, 
+            });
 		},
-		showNoteContextMenu(noteId){
+        hideCategoryContextMenu(){
+            this.currentContextMenuCategoryId = '';
+        },
+		showNoteContextMenu($event, noteId){
 			// console.log('contextmenu');
-			stat.ga('send', 'event', 'note', 'showNoteContextMenu');
-			this.currentContextMenuNoteId = noteId;
-			setTimeout(() => {
-				menu.showContextMenu([{
-					title:'打开',
-					event:'noteOpen'
-				},{
-					title:'删除',
-					event:'noteDelete'
-				},{
-					title:'新建',
-					event:'newNote'
-				},{
-					type:'separator'
-				},{
-					title:'历史版本',
-					event:'noteHistory'
-				}], {
-					targetType: 'note',
-					targetId: noteId,
-					from: 'sidebar',
-				});
-				setTimeout(()=>{
-					this.currentContextMenuNoteId = '';
-				},30);
-			},30);
-		},
+			//stat.ga('send', 'event', 'note', 'showNoteContextMenu');
+            this.currentContextMenuNoteId = noteId;
+            this.$refs.noteContextMenu.show({
+                top: $event.pageY,
+                left: $event.pageX, 
+            });
+        },
+        hideNoteContextMenu(){
+            this.currentContextMenuNoteId = '';
+        },
 		dragStart(e, type, noteOrCategory){
 			if(this.currentMovingNote || this.currentMovingCategory) return;
 			if(type === 'note'){
@@ -255,11 +238,27 @@ export default {
 			this.currentMovingOverCategory = null;
 
 			// console.log('drop', e);
-		}
+		},
 		/*hideContextMenu(){
 			// 会自动关闭，这里主要是将当前右键笔记置空
 			this.$store.commit('switchContextMenuNote', 0);
-		}*/
+        }*/
+        openNote(){
+            this.switchCurrentNote(this.currentContextMenuNoteId);
+        },
+        newNote(){
+
+        },
+        deleteCategory(noteId){
+
+        },
+        deleteNote(){
+            // todo:二次确认
+            if(!confirm('确认删除？')) return;
+            restClient.note.delete(this.currentContextMenuNoteId).then(() => {
+                eventBus.$emit('NOTEBOOK_REFRESH');
+            });
+        },
     },
     props: {
         notebook: {

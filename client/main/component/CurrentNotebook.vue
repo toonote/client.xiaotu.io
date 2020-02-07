@@ -75,6 +75,9 @@ export default {
         eventBus.$on('NOTEBOOK_SWITCH', (notebookId) => {
             this.switchNotebook(notebookId);
         });
+        eventBus.$on('NOTEBOOK_REFRESH', () => {
+            this.switchNotebook(this.notebook.id);
+        });
     }
 };
 </script>
