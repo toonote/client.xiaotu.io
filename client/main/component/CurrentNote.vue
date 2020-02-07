@@ -71,5 +71,6 @@ export default {
 .currentNote{
     display: flex;
     flex: 1;
+    overflow: hidden;
 }
 </style>

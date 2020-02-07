@@ -290,6 +290,7 @@ export default {
 	/*font-family: "PingFang SC";*/
 	min-height:100%;
 	width:250px;
+	flex: 250px 0 0;
 	overflow-y: auto;
 }
 h2 .operate{
