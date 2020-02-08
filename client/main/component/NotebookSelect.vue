@@ -25,6 +25,7 @@
 			/>
 		</li>
 	</transition-group>
+	<a class="transfer" href="#" @click.prevent="transferData">数据迁移</a>
 </section>
 </template>
 
@@ -54,6 +55,14 @@ export default {
 	watch: {
 	},
 	methods: {
+		transferData(){
+			const message = '确认迁移吗？\n\n1. 迁移将清除现有1.0.0数据，并从0.3.x数据生成新的数据\n2. 迁移完成后新旧版数据是独立的，互不影响';
+			if(!confirm(message)) return;
+			restClient.transfer.create().then(() => {
+				alert('迁移完成');
+				this.getNotebookList();
+			});
+		},
 		switchCurrentNotebook(notebookId){
 			if(!notebookId) return;
 			localStorage.setItem('TOONOTE-LAST-NOTEBOOK-ID', notebookId);
@@ -85,6 +94,12 @@ export default {
 };
 </script>
 <style scoped>
+.transfer{
+	position: absolute;
+	bottom: 100px;
+	left: 50%;
+	transform:translateX(-50%);
+}
 .notebookSelect{
 	position: absolute;
 	z-index: 9999;
