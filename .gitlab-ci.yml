@@ -16,6 +16,6 @@ build_and_deploy:
     - echo "$SSH_KEY_PUBLIC">~/.ssh/id_rsa.pub
     - chmod 400 ~/.ssh/id_rsa
     - scp dist.zip root@t.toobug.net:/data/web/client.xiaotu.io
-    - ssh root@t.toobug.net "cd /data/web/client.xiaotu.io&&unzip -o dist.zip -d www"
+    - ssh root@t.toobug.net "cd /data/web/client.xiaotu.io&&unzip -o dist.zip -d www&&rm dist.zip"
   only:
     - master
