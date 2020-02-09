@@ -15,7 +15,7 @@ module.exports = {
     output: {
         path: path.resolve(__dirname, './dist'),
         filename: '[name].[hash].js',
-        publicPath: '/dist/',
+        publicPath: '/',
     },
     module: {
         rules: [
@@ -78,6 +78,13 @@ module.exports = {
         new VueLoaderPlugin(),
         new HtmlWebpackPlugin({
             favicon: path.join(__dirname, './client/favicon.ico'),
+            template: path.join(__dirname, './client/index.html'),
+            filename: path.join(__dirname, './dist/index.html'),
+            chunks: [],
+            alwaysWriteToDisk: true
+        }),
+        new HtmlWebpackPlugin({
+            favicon: path.join(__dirname, './client/favicon.ico'),
             template: path.join(__dirname, './client/login.html'),
             filename: path.join(__dirname, './dist/login.html'),
             chunks: ['login'],
@@ -95,7 +102,7 @@ module.exports = {
 }
 
 if (process.env.NODE_ENV === 'production') {
-    module.exports.devtool = '#source-map'
+    module.exports.devtool = 'none';
     // http://vue-loader.vuejs.org/en/workflow/production.html
     module.exports.plugins = (module.exports.plugins || []).concat([
         new webpack.DefinePlugin({

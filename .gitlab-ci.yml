@@ -1,0 +1,21 @@
+image: node:lts-alpine 
+
+stages:
+  - build_deploy
+
+build_image:
+  stage: build_deploy
+  script:
+    - npm ci
+    - npm run build:prod
+    - cd dist&&zip ../dist.zip *&&cd ..
+    - apk update&&apk add openssh
+    - mkdir ~/.ssh
+    - echo "$SSH_CONFIG">~/.ssh/config
+    - echo "$SSH_KEY_PRIVATE">~/.ssh/id_rsa
+    - echo "$SSH_KEY_PUBLIC">~/.ssh/id_rsa.pub
+    - chmod 400 ~/.ssh/id_rsa
+    - scp dist.zip root@t.toobug.net:/data/web/client.xiaotu.io
+    - ssh root@t.toobug.net "cd /data/web/client.xiaotu.io&&unzip -o dist.zip -d www"
+  only:
+    - master
