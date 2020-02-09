@@ -3,13 +3,13 @@ image: node:lts-alpine
 stages:
   - build_deploy
 
-build_image:
+build_and_deploy:
   stage: build_deploy
   script:
+    - apk update&&apk add openssh zip
     - npm ci
     - npm run build:prod
     - cd dist&&zip ../dist.zip *&&cd ..
-    - apk update&&apk add openssh
     - mkdir ~/.ssh
     - echo "$SSH_CONFIG">~/.ssh/config
     - echo "$SSH_KEY_PRIVATE">~/.ssh/id_rsa
