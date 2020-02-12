@@ -26,6 +26,7 @@ import Editor from '@toonote/md-editor';
 import eventBus from '../utils/eventBus';
 import restClient, {parseResponse} from '../utils/restClient';
 import throttle from 'lodash/throttle';
+import parseTitle from '../utils/parseTitle';
 
 export default {
     components: {
@@ -43,9 +44,15 @@ export default {
     watch:{
         content: throttle(function(content: string){
             if(content === this.currentNote.content) return;
+            const {title} = parseTitle(content);
             restClient.note.update(this.currentNote.id, {
+                title,
                 content,
             }).then(() => {
+                if(title !== this.currentNote.title){
+                    eventBus.$emit('NOTE_TITLE_CHANGE', title);
+                }
+                this.currentNote.title = title;
                 this.currentNote.content = content;
             });
         }, 1000, {leading: false}),

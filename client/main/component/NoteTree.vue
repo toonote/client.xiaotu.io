@@ -80,6 +80,17 @@ let movingOverDirection;
 
 export default {
 	computed: {
+		currentNote(){
+			let ret = null;
+			this.notebook.categories.forEach((category) => {
+				category.notes.forEach((note) => {
+					if(note.id === this.currentNoteId){
+						ret = note;
+					}
+				});
+			});
+			return ret;
+		}
 	},
 	watch: {
 	},
@@ -308,6 +319,9 @@ export default {
 	components:{
 	},
 	mounted(){
+		eventBus.on('NOTE_TITLE_CHANGE', (title) => {
+			this.currentNote.title = title;
+		});
 		// eventHub.on('categoryRename', (categoryId) => {
 		// 	this.currentEditCategoryId = categoryId;
 		// 	logger('categoryRename', categoryId);
