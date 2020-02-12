@@ -299,9 +299,9 @@ export default {
         notebook: {
             default: {}
         },
-        currentNote: {
+        /*currentNote: {
             default: null
-        }
+        }*/
     },
 	data(){
 		return {
@@ -319,7 +319,7 @@ export default {
 	components:{
 	},
 	mounted(){
-		eventBus.on('NOTE_TITLE_CHANGE', (title) => {
+		eventBus.$on('NOTE_TITLE_CHANGE', (title) => {
 			this.currentNote.title = title;
 		});
 		// eventHub.on('categoryRename', (categoryId) => {
