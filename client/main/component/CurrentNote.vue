@@ -60,7 +60,9 @@ export default {
     methods: {
         tnEvent(){},
         saveAttachment(){},
-        lineScroll(){},
+        lineScroll(line){
+            eventBus.$emit('EDITOR_SCROLL', line);
+        },
         async switchNote(noteId: string){
             const note = parseResponse(await restClient.note.find(noteId));
             this.currentNote = note;

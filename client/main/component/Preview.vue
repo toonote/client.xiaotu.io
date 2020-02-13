@@ -36,6 +36,7 @@ import * as mdRender from '../utils/mdRender';
 // import Menu from '../modules/menu/electron';
 // import {uiData} from '../modules/controller';
 import scroll from '../utils/scroll';
+import eventBus from '../utils/eventBus';
 
 // const logger = debug('preview');
 const logger = console.log;
@@ -134,7 +135,7 @@ export default {
 		},
 		// 构建滚动对应的信息表
 		buildScrollMap(){
-			if(!this.layout.data.preview) return;
+			if(!this.layout.preview) return;
 			console.time('buildScrollMap');
 			let $preview = this.$el;
 			let $previewAnchors = $preview.querySelectorAll('.line');
@@ -147,7 +148,7 @@ export default {
 			});
 			scrollMap[0] = 0;
 
-			let contentLines = this.currentNoteContent.data.split('\n').length;
+			let contentLines = this.content.split('\n').length;
 			if(!scrollMap[contentLines - 1]) scrollMap[contentLines - 1] = $preview.scrollHeight;
 
 			for(var i = 1; i<contentLines -1; i++){
@@ -200,6 +201,9 @@ export default {
 		return data;
 	},
 	mounted(){
+		eventBus.$on('EDITOR_SCROLL', (line) => {
+			this.scrollToSourceLine(line);
+		});
 		/* eventHub.on('attachmentOpen', (data) => {
 			this.openAttachment(data.targetSrc);
 		});
