@@ -287,7 +287,7 @@ export default {
 	background:#F6F6F6;
 	border-right:1px solid #E0E0E0;
 	color:#585858;
-	/*font-family: "PingFang SC";*/
+	font-family: "PingFang SC";
 	min-height:100%;
 	width:250px;
 	flex: 250px 0 0;
@@ -305,6 +305,7 @@ h2:hover .operate{
 	opacity: 1;
 }
 .searchWrapper input{
+	-webkit-appearance: textfield;
 	display: block;
     border: 0 none;
     width: 100%;
