@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/TooNote/client.xiaotu.io#readme",
   "devDependencies": {
-    "@toonote/md-editor": "^1.0.0-alpha.1",
+    "@toonote/md-editor": "^1.0.0-alpha.2",
     "axios": "^0.19.2",
     "axios-rest-client": "^0.1.11",
     "css-loader": "^3.4.2",
