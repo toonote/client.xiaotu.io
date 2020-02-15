@@ -105,32 +105,12 @@ const getFileSize = function(size){
 // 来自https://github.com/jonschlinkert/remarkable/blob/master/lib/rules.js#L170
 renderer.renderer.rules.image = function (tokens, idx) {
 	const originalSrc = tokens[idx].src;
-	if(!srcCache[originalSrc]){
-		const attachmentId = originalSrc.replace(/^tnattach:\/\//,'').replace(/\..+/g, '');
-		const attachment = getResults('Attachment').filtered(`id="${attachmentId}"`);
-		if(attachment[0]){
-			srcCache[originalSrc] = {
-				id: attachmentId,
-				url: 'file://' + attachment[0].localPath,
-				title: attachment[0].filename,
-				ext: attachment[0].ext,
-				size: attachment[0].size
-			};
-		}else{
-			srcCache[originalSrc] = {
-				id: '',
-				title: '',
-				url: originalSrc,
-				ext: '',
-				size: 0
-			};
-		}
-	}
-	const attachmentInfo = srcCache[originalSrc];
-	const realSrc = attachmentInfo.url;
-	const imageRegExp = /^\.(?:jpe?g|png|bmp|tiff|gif)$/;
+	const attachmentId = originalSrc.replace(/^tnattach:\/\//,'').replace(/\..+/g, '');
+	const ext = originalSrc.split('.').pop();
+	const realSrc = '';
+	const imageRegExp = /^(?:jpe?g|png|bmp|tiff|gif)$/;
 
-	if(!attachmentInfo.ext || imageRegExp.test(attachmentInfo.ext)){
+	if(!ext || imageRegExp.test(ext)){
 		// 如果是图片
 		var src = ' src="' + realSrc + '"';
 		var title = tokens[idx].title ? (' title="' + tokens[idx].title + '"') : '';
@@ -139,12 +119,12 @@ renderer.renderer.rules.image = function (tokens, idx) {
 		return '<img' + src + alt + title + suffix + '>';
 	}else{
 		// 如果是附件
-		const extIcon = attachmentInfo.ext.replace(/\./g, '');
-		return `<div class="tn-attachment" data-id="${attachmentInfo.id}" data-src="${attachmentInfo.url}" data-title="${attachmentInfo.title}">
+		const extIcon = ext;
+		return `<div class="tn-attachment" data-id="${attachmentId}" data-src="${realSrc}" data-title="attachmentId">
 				<div class="tn-attachment-icon tn-attachment-icon-${extIcon}"></div>
 				<div class="tn-attachment-info">
-					<p class="tn-attachment-title">${attachmentInfo.title}</p>
-					<p class="tn-attachment-size">${getFileSize(attachmentInfo.size)}</p>
+					<p class="tn-attachment-title">${attachmentId}</p>
+					<p class="tn-attachment-size">0k</p>
 				</div>
 			</div>`;
 	}
