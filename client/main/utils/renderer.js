@@ -105,9 +105,27 @@ const getFileSize = function(size){
 // 来自https://github.com/jonschlinkert/remarkable/blob/master/lib/rules.js#L170
 renderer.renderer.rules.image = function (tokens, idx) {
 	const originalSrc = tokens[idx].src;
-	const attachmentId = originalSrc.replace(/^tnattach:\/\//,'').replace(/\..+/g, '');
-	const ext = originalSrc.split('.').pop();
-	const realSrc = '';
+	const filename = tokens[idx].alt;
+	let ext = originalSrc.split('.').pop();
+	if(originalSrc.indexOf('.') === -1){
+		ext = '';
+	}
+
+	let realSrc = originalSrc;
+	let attachmentId = '';
+	const tnattachReg = /^tnattach:\/\//;
+	if(tnattachReg.test(originalSrc)){
+
+		const BASE_URL = process.env.NODE_ENV === 'production' ?
+			'https://api.xiaotu.io':
+			'https://test-api.xiaotu.io';
+
+		attachmentId = originalSrc.replace(tnattachReg,'').replace(/\..+/g, '');
+		realSrc = BASE_URL + '/api/v2/getAttachment?id=' + attachmentId + 
+			'&ext=' + ext + 
+			'&token=' + localStorage.getItem('TOONOTE-TOKEN');
+	}
+
 	const imageRegExp = /^(?:jpe?g|png|bmp|tiff|gif)$/;
 
 	if(!ext || imageRegExp.test(ext)){
@@ -121,11 +139,13 @@ renderer.renderer.rules.image = function (tokens, idx) {
 		// 如果是附件
 		const extIcon = ext;
 		return `<div class="tn-attachment" data-id="${attachmentId}" data-src="${realSrc}" data-title="attachmentId">
+				<a href="${realSrc}" target="_blank">
 				<div class="tn-attachment-icon tn-attachment-icon-${extIcon}"></div>
 				<div class="tn-attachment-info">
-					<p class="tn-attachment-title">${attachmentId}</p>
+					<p class="tn-attachment-title">${filename}</p>
 					<p class="tn-attachment-size">0k</p>
 				</div>
+				</a>
 			</div>`;
 	}
 };

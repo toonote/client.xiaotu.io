@@ -76,7 +76,7 @@ export default {
                 });
                 this.$refs.editor.insertAttachment({
                     filename: result.filename,
-                    url: result.url.replace('https://attach.xiaotu.io/attachments', 'tnattach://'),
+                    url: result.url.replace('https://attach.xiaotu.io/attachments/', 'tnattach://'),
                 });
                 console.log('upload success', result);
             }
