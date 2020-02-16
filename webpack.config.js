@@ -14,7 +14,7 @@ module.exports = {
     },
     output: {
         path: path.resolve(__dirname, './dist'),
-        filename: '[name].[hash].js',
+        filename: process.env.NODE_ENV !== 'production' ? '[name].[hash].js':'[name].[contenthash].js',
         publicPath: '/',
     },
     module: {
@@ -46,7 +46,7 @@ module.exports = {
                 test: /\.(png|jpg|gif|svg|eot|woff|ttf)$/,
                 loader: 'url-loader',
                 options: {
-                    name: '[name].[ext]?[hash]',
+                    name: '[name].[ext]?[contenthash]',
                     limit: '10240',
                     esModule: false,
                 }

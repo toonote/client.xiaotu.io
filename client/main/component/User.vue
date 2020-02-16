@@ -56,7 +56,7 @@
 
 <template>
 <section class="login">
-	<img v-if="userData.avatarUrl" class="avatar" :src="userData.avatarUrl" />
+	<img v-if="userData.avatarUrl" class="avatar" :src="userData.avatarUrl" @error="userData.avatarUrl=''" />
 	<img v-else class="avatar" src="../images/avatar.png" />
 	<div class="userInfo">
 		<span v-if="userData.name">{{userData.name}}</span>
