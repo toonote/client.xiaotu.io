@@ -8,13 +8,10 @@
             <div class="qrCode">
                 <img :src="loginQrCode" />
             </div>
-        </div>
-        <!-- <div class="footer">
             <p>
-                <a href="https://api.xiaotu.io/oauth/redirect/github?client=mac">使用Github登录</a>
-                <a href="https://github.com/TooNote/TooNote/issues/new" class="externalLink">无法登录？</a>
+                <a href="https://api.xiaotu.io/oauth/redirect/github?client=webClient">使用Github登录</a>
             </p>
-        </div> -->
+        </div>
     </div>
 </section>
 </template>
@@ -33,7 +30,24 @@ export default {
                 'https://test-api.xiaotu.io',
         };
     },
-    mounted(){
+    async mounted(){
+        // 如果已登录，给了token
+        if(location.search.indexOf('token=') > -1){
+            const queryString = location.search.substr(1);
+            const query: any = {};
+            queryString.split('&').map((qsItem) => {
+                const part = qsItem.split('=');
+                query[part[0]] = part[1];
+            });
+            if(query.token){
+                localStorage.setItem('TOONOTE-TOKEN', query.token);
+                const result = await this.validateLogin();
+                if(!result){
+                    this.initWxLogin();
+                }
+                return;
+            }
+        }
         this.initWxLogin();
     },
     methods:{
@@ -143,5 +157,9 @@ export default {
 }
 .login .loginBody .qrCode img{
     max-width: 100%;
+}
+.login .loginBody > p{
+    width: 300px;
+    text-align: center;
 }
 </style>
