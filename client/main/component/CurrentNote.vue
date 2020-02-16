@@ -4,8 +4,9 @@
         <editor
             v-show="layout.editor"
             v-model="content"
-            @save-attachment="saveAttachment"
-            @line-scroll="lineScroll"
+            ref="editor"
+            @attachment="onAttachment"
+            @line-scroll="onLineScroll"
             :tn-event="tnEvent"
         ></editor>
     </transition>
@@ -27,6 +28,7 @@ import eventBus from '../utils/eventBus';
 import restClient, {parseResponse} from '../utils/restClient';
 import throttle from 'lodash/throttle';
 import parseTitle from '../utils/parseTitle';
+import {upload} from '../utils/attachement';
 
 export default {
     components: {
@@ -59,8 +61,27 @@ export default {
     },
     methods: {
         tnEvent(){},
-        saveAttachment(){},
-        lineScroll(line){
+        async onAttachment(file){
+            console.log('on saveAttachment', arguments);
+            for(let i = 0; i < file.files.length; i++){
+                const result = await upload(file.files[i]);
+                await restClient.attachment.create({
+                    id: result.id,
+                    noteId: this.currentNote.id,
+                    filename: result.filename,
+                    size: result.size,
+                    ext: result.ext,
+                    storage: 'QCLOUD',
+                    publicUrl: result.url,
+                });
+                this.$refs.editor.insertAttachment({
+                    filename: result.filename,
+                    url: result.url.replace('https://attach.xiaotu.io/attachments', 'tnattach://'),
+                });
+                console.log('upload success', result);
+            }
+        },
+        onLineScroll(line){
             eventBus.$emit('EDITOR_SCROLL', line);
         },
         async switchNote(noteId: string){
