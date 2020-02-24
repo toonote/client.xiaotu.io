@@ -17,17 +17,14 @@
 </template>
 <script lang="ts">
 import axios from 'axios';
-
-declare var process:any
+import config from '../common/config';
+import {getRemoteInfo} from '../common/user';
 
 export default {
     data(){
         return {
             showLoginImage: false,
             loginQrCode: '',
-            BASE_URL: process.env.NODE_ENV === 'production' ?
-                'https://api.xiaotu.io':
-                'https://test-api.xiaotu.io',
         };
     },
     async mounted(){
@@ -52,19 +49,10 @@ export default {
     },
     methods:{
         validateLogin: async function(){
-            const token = localStorage.getItem('TOONOTE-TOKEN');
-            if(!token){
-                return false;
-            }
             try{
-                const response = await axios.get(`${this.BASE_URL}/user/info`, {
-                    headers: {
-                        'x-toonote-token': token
-                    }
-                });
-                console.log(response.data);
-                localStorage.setItem('TOONOTE-USER', JSON.stringify(response.data));
+                await getRemoteInfo();
                 location.href = '/main.html';
+                return true;
             }catch(e){
                 alert('登录失败：' + e.message);
                 console.log(e);
@@ -82,7 +70,7 @@ export default {
             this.showLoginImage = true;
 
             // step 1，获取场景值
-            let response = await axios.get(`${this.BASE_URL}/user/getLoginScene?_=${Date.now()}`);
+            let response = await axios.get(`${config.BASE_URL}/user/getLoginScene?_=${Date.now()}`);
             if(+response.status !== 200){
                 alert('服务器错误，暂时无法登录，请稍后再试');
                 return;
@@ -90,11 +78,11 @@ export default {
             let scene = response.data.scene;
 
             // step 2，显示二维码
-            this.loginQrCode = `${this.BASE_URL}/user/weappLogin?scene=${scene}`;
+            this.loginQrCode = `${config.BASE_URL}/user/weappLogin?scene=${scene}`;
 
             // step3，定时刷新
             let getResult = async () => {
-                let response = await axios.get(`${this.BASE_URL}/user/getLoginStatus?scene=${scene}&_=${Date.now()}`);
+                let response = await axios.get(`${config.BASE_URL}/user/getLoginStatus?scene=${scene}&_=${Date.now()}`);
                 if(+response.status !== 200){
                     alert('服务器错误，暂时无法登录，请稍后再试');
                     return;

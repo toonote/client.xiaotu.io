@@ -70,9 +70,7 @@
 
 
 <script>
-// import * as user from '../modules/cloud/user';
-// import * as sync from '../modules/cloud/sync';
-// import debug from '../modules/util/debug';
+import { getLocalInfo,getRemoteInfo } from '../../common/user';
 
 // const logger = debug('user:main');
 
@@ -82,14 +80,29 @@ export default {
 	watch: {
 	},
 	methods: {
-		initUser(){
-			const userStr = localStorage.getItem('TOONOTE-USER');
-			if(!userStr) return;
-			this.userData = JSON.parse(userStr);
+		async initUser(){
+			let user = getLocalInfo();
+			console.log('get user from local');
+			if(!user){
+				console.log('no local user');
+				user = await getRemoteInfo();
+				console.log('get user from remote');
+				if(!user){
+					console.log('no remote user');
+					location.href = '/login.html';
+					return;
+				}
+			}
+			this.userData = user;
+		},
+		setupTimer(){
+			// 5分钟尝试更新一次用户信息
+			setTimeout(() => {
+				this.initUser();
+			}, 5*60*1000);
 		},
 		doLogin(){
 			logger('doLogin');
-			// user.login();
 		}
 	},
 	data(){
@@ -99,7 +112,6 @@ export default {
 	},
 	mounted(){
 		this.initUser();
-		// sync.init();
 	}
 
 };
