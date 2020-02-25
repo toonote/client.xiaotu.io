@@ -1,11 +1,11 @@
 import RestClient from 'axios-rest-client';
-const BASE_URL = process.env.NODE_ENV === 'production' ?
-'https://api.xiaotu.io':
-'https://test-api.xiaotu.io',
+import config from '../../common/config';
+
+declare var TOONOTE_VERSION:any;
 
 export function getClient(){
     const client = new RestClient({
-        baseUrl: BASE_URL + '/api/v2' 
+        baseUrl: config.BASE_URL + '/api/v2' 
     });
     
     client._axios.interceptors.request.use((config: any) => {
@@ -19,7 +19,7 @@ export function getClient(){
     return client;
 };
 
-export function parseResponse(response){
+export function parseResponse(response: any){
     if(response.status !== 200){
         throw new Error('request error, status ' + response.status);
     }

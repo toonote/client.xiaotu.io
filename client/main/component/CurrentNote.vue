@@ -29,6 +29,7 @@ import restClient, {parseResponse} from '../utils/restClient';
 import throttle from 'lodash/throttle';
 import parseTitle from '../utils/parseTitle';
 import {upload} from '../utils/attachement';
+import {encrypt, decrypt} from '../utils/crypto/main';
 
 export default {
     components: {
@@ -44,12 +45,12 @@ export default {
         }
     },
     watch:{
-        content: throttle(function(content: string){
+        content: throttle(async function(content: string){
             if(content === this.currentNote.content) return;
             const {title} = parseTitle(content);
             restClient.note.update(this.currentNote.id, {
-                title,
-                content,
+                title: await encrypt(this.currentNote.id ,title),
+                content: await encrypt(this.currentNote.id, content),
             }).then(() => {
                 if(title !== this.currentNote.title){
                     eventBus.$emit('NOTE_TITLE_CHANGE', title);
@@ -86,6 +87,13 @@ export default {
         },
         async switchNote(noteId: string){
             const note = parseResponse(await restClient.note.find(noteId));
+            try{
+                note.title = await decrypt(note.id, note.title);
+                note.content= await decrypt(note.id, note.content);
+            }catch(e){
+                console.log('decrypt failed, maybe not encrypted:' + e.message);    
+            }
+            console.log(note);
             this.currentNote = note;
             this.content = note.content;
         }
