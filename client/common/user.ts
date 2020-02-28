@@ -24,3 +24,17 @@ export function getLocalInfo(){
     }
     return JSON.parse(localStorage.getItem('TOONOTE-USER') || 'null');
 };
+
+export async function setRemoteInfo(data: any){
+    const token = localStorage.getItem('TOONOTE-TOKEN');
+    if(!token){
+        throw new Error('no token');
+    }
+    const existUser = getLocalInfo();
+    const response = await axios.put(`${config.BASE_URL}/api/v2/user/` + existUser.id, data, {
+        headers: {
+            'x-toonote-token': token
+        }
+    });
+    await getRemoteInfo(token);
+};

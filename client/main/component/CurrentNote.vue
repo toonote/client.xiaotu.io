@@ -82,7 +82,7 @@ export default {
                 console.log('upload success', result);
             }
         },
-        onLineScroll(line){
+        onLineScroll(line: number){
             eventBus.$emit('EDITOR_SCROLL', line);
         },
         async switchNote(noteId: string){

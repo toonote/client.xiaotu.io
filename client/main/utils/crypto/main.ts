@@ -1,4 +1,4 @@
-import { getLocalInfo } from '../../../common/user';
+import { getLocalInfo, setRemoteInfo } from '../../../common/user';
 import WebCrypto from '../crypto/WebCrypto';
 
 let _user:any;
@@ -14,20 +14,25 @@ type EncryptConfig = {
     // 算法
     alg: 'AES-GCM',
     // 密钥组成
-    key: 'ID-4+MO-1+LS3',
+    key: 'ID-4+MO-1+FS3',
 };
 
-const getEncrypt = function():EncryptConfig{
+export const getEncrypt = function():EncryptConfig{
     if(!_user){
         _user = getLocalInfo();
     }
-    return JSON.parse(_user.encrypt);
+    return JSON.parse(_user.encrypt || 'null');
 };
 
-const getEncryptKey = function(){
-    return localStorage.getItem('TOONOTE-ENCRYPT-KEY') || '';
+export const getEncryptKey = function(){
+    const keyArr = JSON.parse(localStorage.getItem('TOONOTE-ENCRYPT-KEY') || '[]');
+    return keyArr.join('');
 };
 
+export const setEncrypt = async function(remoteEncrypt: EncryptConfig, key: string[]){
+    await setRemoteInfo({encrypt: JSON.stringify(remoteEncrypt)});
+    localStorage.setItem('TOONOTE-ENCRYPT-KEY', JSON.stringify(key));
+};
 
 export async function encrypt(id: string, str: string){
     let encrypt = getEncrypt();

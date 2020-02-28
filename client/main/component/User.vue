@@ -1,3 +1,124 @@
+<template>
+<section class="login">
+	<img v-if="userData.avatarUrl" class="avatar" :src="userData.avatarUrl" @error="userData.avatarUrl=''" />
+	<img v-else class="avatar" src="../images/avatar.png" />
+	<div class="userInfo">
+		<span v-if="userData.name">{{userData.name}}</span>
+		<a v-else v-on:click="doLogin" href="#">点击登录</a>
+	</div>
+	<div class="levelWrapper">
+		<!-- <div class="label">VIP</div> -->
+		<div class="label" @click="encryptDialog.show=true">
+			<span v-if="isEncrypted">已加密</span>
+			<a v-else>未加密</a>
+		</div>
+	</div>
+
+	<my-dialog v-show="encryptDialog.show" ref="encryptDialog">
+		<form class="tn-form">
+			<div class="tn-form-item">
+				<label class="tn-form-label">加密方式</label>
+				<input type="text" readonly :value="encryptDialog.form.alg" />
+			</div>
+			<div 
+				class="tn-form-item" 
+				v-for="(label, $index) in encryptDialog.form.keyLabel"
+				:key="label"
+				>
+				<label class="tn-form-label">{{label}}</label>
+				<input type="text" v-model="encryptDialog.form.keyValue[$index]" />
+			</div>
+			<div class="tn-form-item" v-show="!isEncrypted">
+				<label class="tn-label">设置加密信息后将加密所有的笔记标题和内容。</label>
+			</div>
+			<div class="tn-form-item tn-btn-wrapper">
+				<button type="submit" class="tn-btn" @click.prevent="setEncrypt">确定</button>
+			</div>
+		</form>
+	</my-dialog>
+</section>
+</template>
+
+
+<script>
+import { getLocalInfo,getRemoteInfo } from '../../common/user';
+import { getEncrypt, setEncrypt } from '../utils/crypto/main';
+import MyDialog from './base/Dialog.vue';
+// const logger = debug('user:main');
+
+export default {
+	components: {
+		MyDialog,
+	},
+	computed: {
+		encrypt(){
+			if(!this.userData.encrypt) return false;
+			const encrypt = JSON.parse(this.userData.encrypt);
+			return encrypt;
+		},
+		isEncrypted(){
+			return this.encrypt && this.encrypt.alg;
+		},
+	},
+	watch: {
+	},
+	methods: {
+		async initUser(){
+			let user = getLocalInfo();
+			console.log('get user from local');
+			if(!user){
+				console.log('no local user');
+				user = await getRemoteInfo();
+				console.log('get user from remote');
+				if(!user){
+					console.log('no remote user');
+					location.href = '/login.html';
+					return;
+				}
+			}
+			this.userData = user;
+		},
+		setupTimer(){
+			// 5分钟尝试更新一次用户信息
+			setTimeout(() => {
+				this.initUser();
+			}, 5*60*1000);
+		},
+		doLogin(){
+			logger('doLogin');
+		},
+		async setEncrypt(){
+			await setEncrypt({
+				alg: this.encryptDialog.form.alg,
+				key: this.encryptDialog.form.key, 
+			}, this.encryptDialog.form.keyValue);
+			this.encryptDialog.show = false;
+			await this.initUser();
+		},
+	},
+	data(){
+		return {
+			userData: {},
+			encryptDialog: {
+				show: false,
+				form: {
+					alg: 'AES-GCM',
+					key: 'ID-4+MO-1+FS3',
+					keyLabel: ['身份证后4位', '母亲姓名最后一个字全拼', '第1所学校第3个字全拼'],
+					keyValue: [],
+				},
+			},
+		};
+	},
+	mounted(){
+		this.initUser();
+		this.$refs.encryptDialog.$on('hide', () => {
+			this.encryptDialog.show = false;
+		});
+	}
+
+};
+</script>
 <style scoped>
 .login{
 	padding:10px;
@@ -34,6 +155,7 @@
     background: #718c00;
     display: inline-block;
     color: white;
+	cursor: pointer;
 }
 .login .taskIndicator{
 	position: absolute;
@@ -53,66 +175,3 @@
 	color: white;
 }
 </style>
-
-<template>
-<section class="login">
-	<img v-if="userData.avatarUrl" class="avatar" :src="userData.avatarUrl" @error="userData.avatarUrl=''" />
-	<img v-else class="avatar" src="../images/avatar.png" />
-	<div class="userInfo">
-		<span v-if="userData.name">{{userData.name}}</span>
-		<a v-else v-on:click="doLogin" href="#">点击登录</a>
-	</div>
-	<!-- <div class="levelWrapper">
-		<div class="label">VIP</div>
-	</div> -->
-</section>
-</template>
-
-
-<script>
-import { getLocalInfo,getRemoteInfo } from '../../common/user';
-
-// const logger = debug('user:main');
-
-export default {
-	computed: {
-	},
-	watch: {
-	},
-	methods: {
-		async initUser(){
-			let user = getLocalInfo();
-			console.log('get user from local');
-			if(!user){
-				console.log('no local user');
-				user = await getRemoteInfo();
-				console.log('get user from remote');
-				if(!user){
-					console.log('no remote user');
-					location.href = '/login.html';
-					return;
-				}
-			}
-			this.userData = user;
-		},
-		setupTimer(){
-			// 5分钟尝试更新一次用户信息
-			setTimeout(() => {
-				this.initUser();
-			}, 5*60*1000);
-		},
-		doLogin(){
-			logger('doLogin');
-		}
-	},
-	data(){
-		return {
-			userData: {} 
-		};
-	},
-	mounted(){
-		this.initUser();
-	}
-
-};
-</script>
