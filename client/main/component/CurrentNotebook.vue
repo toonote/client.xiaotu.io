@@ -11,6 +11,7 @@
 import NoteTree from './NoteTree.vue';
 import eventBus from '../utils/eventBus';
 import restClient, {parseResponse} from '../utils/restClient';
+import { decrypt } from '../utils/crypto/main';
 
 type Note = {
     title: string,
@@ -69,6 +70,18 @@ export default {
                 };
             });
             this.notebook = renderNotebook;
+
+            // notes标题解密
+            (async () => {
+                for(let i=0; i<notes.length; i++){
+                    let note = notes[i];
+                    try{
+                        note.title = await decrypt(note.id, note.title);
+                    }catch(e){
+                        
+                    }
+                }
+            })();
         },
     },
     mounted(){
