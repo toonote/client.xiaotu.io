@@ -82,6 +82,7 @@ export default {
 	computed: {
 		currentNote(){
 			let ret = null;
+			if(!this.notebook || !this.notebook.categories) return ret;
 			this.notebook.categories.forEach((category) => {
 				category.notes.forEach((note) => {
 					if(note.id === this.currentNoteId){
@@ -320,6 +321,7 @@ export default {
 	},
 	mounted(){
 		eventBus.$on('NOTE_TITLE_CHANGE', (title) => {
+			if(!this.currentNote) return;
 			this.currentNote.title = title;
 		});
 		// eventHub.on('categoryRename', (categoryId) => {

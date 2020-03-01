@@ -42,8 +42,9 @@
 
 <script>
 import { getLocalInfo,getRemoteInfo } from '../../common/user';
-import { getEncrypt, setEncrypt } from '../utils/crypto/main';
+import { getEncrypt, setEncrypt, setEncryptKey, decrypt, isKeyValid } from '../utils/crypto/main';
 import MyDialog from './base/Dialog.vue';
+import eventBus from '../utils/eventBus';
 // const logger = debug('user:main');
 
 export default {
@@ -84,16 +85,38 @@ export default {
 				this.initUser();
 			}, 5*60*1000);
 		},
+		async initEncryptKey(){
+			if(!this.isEncrypted) return;
+			const isValid = await isKeyValid();
+			if(!isValid){
+				this.encryptDialog.show = true;
+			}
+		},
 		doLogin(){
 			logger('doLogin');
 		},
 		async setEncrypt(){
-			await setEncrypt({
-				alg: this.encryptDialog.form.alg,
-				key: this.encryptDialog.form.key, 
-			}, this.encryptDialog.form.keyValue);
-			this.encryptDialog.show = false;
-			await this.initUser();
+			if(!this.isEncrypted){
+				await setEncrypt({
+					alg: this.encryptDialog.form.alg,
+					key: this.encryptDialog.form.key,
+					validateString: '',
+				}, this.encryptDialog.form.keyValue);
+				this.encryptDialog.show = false;
+				this.encryptDialog.form.keyValue = [];
+				eventBus.$emit('CRYPTO_ON');
+				await this.initUser();
+			}else{
+				setEncryptKey(this.encryptDialog.form.keyValue);
+				const isValid = await isKeyValid();
+				if(isValid){
+					this.encryptDialog.show = false;
+					this.encryptDialog.form.keyValue = [];
+					eventBus.$emit('CRYPTO_UPDATE_KEY');
+				}else{
+					alert('密钥验证失败。');
+				}
+			}
 		},
 	},
 	data(){
@@ -112,6 +135,7 @@ export default {
 	},
 	mounted(){
 		this.initUser();
+		this.initEncryptKey();
 		this.$refs.encryptDialog.$on('hide', () => {
 			this.encryptDialog.show = false;
 		});

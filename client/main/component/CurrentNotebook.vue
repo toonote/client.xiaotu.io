@@ -11,7 +11,7 @@
 import NoteTree from './NoteTree.vue';
 import eventBus from '../utils/eventBus';
 import restClient, {parseResponse} from '../utils/restClient';
-import { decrypt } from '../utils/crypto/main';
+import { decryptNoteList } from '../utils/crypto/main';
 
 type Note = {
     title: string,
@@ -42,6 +42,7 @@ export default {
         return {
             notebook: {},
             currentNote: null,
+            noteList: [],
         };
     },
     methods: {
@@ -70,18 +71,8 @@ export default {
                 };
             });
             this.notebook = renderNotebook;
-
-            // notes标题解密
-            (async () => {
-                for(let i=0; i<notes.length; i++){
-                    let note = notes[i];
-                    try{
-                        note.title = await decrypt(note.id, note.title);
-                    }catch(e){
-                        
-                    }
-                }
-            })();
+            this.noteList = notes;
+            await decryptNoteList(notes);
         },
     },
     mounted(){
@@ -90,6 +81,10 @@ export default {
         });
         eventBus.$on('NOTEBOOK_REFRESH', () => {
             this.switchNotebook(this.notebook.id);
+        });
+        // 输入了新的key时，重新解密笔记列表
+        eventBus.$on('CRYPTO_UPDATE_KEY', () => {
+            decryptNoteList(this.noteList);
         });
     }
 };
