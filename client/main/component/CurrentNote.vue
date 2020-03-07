@@ -48,10 +48,22 @@ export default {
         content: throttle(async function(content: string){
             if(content === this.currentNote.content) return;
             const {title} = parseTitle(content);
-            restClient.note.update(this.currentNote.id, {
-                title: await encrypt(this.currentNote.id ,title),
-                content: await encrypt(this.currentNote.id, content),
-            }).then(() => {
+
+            const data = {
+                title,
+                content,
+            };
+            if(+this.currentNote.isEncrypted === 1){
+                try{
+                    data.title = await encrypt(this.currentNote.id ,title);
+                    data.content = await encrypt(this.currentNote.id ,content);
+                }catch(e){
+                    alert('加密过程失败：' + e.message);
+                    console.log(e);
+                }
+            }
+
+            restClient.note.update(this.currentNote.id, data).then(() => {
                 if(title !== this.currentNote.title){
                     eventBus.$emit('NOTE_TITLE_CHANGE', title);
                 }

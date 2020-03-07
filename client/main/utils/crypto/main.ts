@@ -115,3 +115,15 @@ export async function decryptNote(note: any){
     }
     console.log(note);
 };
+
+export async function encryptNote(note: any){
+    if(!isKeyValid()) return;
+    try{
+        note.title = await encrypt(note.id, note.title);
+        note.content= await encrypt(note.id, note.content);
+        note.isEncrypted = 1;
+    }catch(e){
+        console.log('decrypt failed, maybe not encrypted:' + e.message);    
+    }
+    console.log(note); 
+}

@@ -57,24 +57,10 @@
 </template>
 
 <script>
-// import debug from '../modules/util/debug';
-/* import {
-	uiData,
-	switchCurrentNote,
-	updateNoteOrder,
-	updateNoteCategory,
-	updateCategoryOrder,
-	exitNotebook,
-	categoryRename,
-	search
-} from '../modules/controller'; */
-// import Menu from '../modules/menu/electron';
-// import stat from '../modules/util/stat';
-// import eventHub from '../modules/util/eventHub';
-// import {throttle} from 'lodash';
 import eventBus from '../utils/eventBus';
 import restClient, {parseResponse} from '../utils/restClient';
 import idGen from '../utils/idGen';
+import { getEncrypt, encryptNote } from '../utils/crypto/main';
 
 let movingOverDirection;
 
@@ -259,7 +245,7 @@ export default {
         openNote(){
             this.switchCurrentNote(this.currentContextMenuNoteId);
         },
-        newNote(from){
+        async newNote(from){
             let targetCategory;
             this.notebook.categories.forEach((category) => {
                 if(from === 'categoryMenu'){
@@ -274,14 +260,21 @@ export default {
                     });
                 }
             });
-            if(!targetCategory) return;
-            restClient.note.create({
+			if(!targetCategory) return;
+			const newNote = {
                 title: '新笔记',
                 content: '# ' + targetCategory.title + '\\新笔记',
                 id: idGen(),
                 categoryId: targetCategory.id,
-                notebookId: this.notebook.id,
-            }).then(() => {
+				notebookId: this.notebook.id,
+				isEncrypted: 0,
+			};
+			const encrypt = getEncrypt();
+			if(encrypt && encrypt.alg){
+				await encryptNote(newNote);
+			}
+			
+            restClient.note.create(newNote).then(() => {
                 eventBus.$emit('NOTEBOOK_REFRESH');
             });
         },
