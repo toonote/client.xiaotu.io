@@ -42,10 +42,10 @@
 
 <script>
 import { getLocalInfo,getRemoteInfo } from '../../common/user';
-import { getEncrypt, setEncrypt, setEncryptKey, decrypt, isKeyValid } from '../utils/crypto/main';
+import { getEncrypt, setEncrypt, setEncryptKey, decrypt, isKeyValid, encryptNote } from '../utils/crypto/main';
 import MyDialog from './base/Dialog.vue';
 import eventBus from '../utils/eventBus';
-// const logger = debug('user:main');
+import restClient, { parseResponse } from '../utils/restClient';
 
 export default {
 	components: {
@@ -118,6 +118,37 @@ export default {
 				}
 			}
 		},
+		async encryptAllNote(){
+			if(!this.isEncrypted) return;
+			const isValid = await isKeyValid();
+			if(!isValid) return;
+
+			const KEY = 'TOONOTE_ALL_NOTE_ENCRYPTED'; 
+			const isAllEncrypted = +localStorage.getItem(KEY);
+			if(isAllEncrypted) return;
+			console.log('ready to encrypt all note.');
+			const unEncryptedNotes = parseResponse(await restClient.note.all({
+				where: JSON.stringify({
+					isEncrypted: 0,
+				}),
+			}));
+			console.log('to encrypt note count: %s', unEncryptedNotes.length);
+			for(let i=0; i<unEncryptedNotes.length; i++){
+				const note = parseResponse(await restClient.note.find(unEncryptedNotes[i].id));
+				console.log('encrypting note: %s', note.title);
+				try{
+					await encryptNote(note);
+					await restClient.note.update(note.id, {
+						title: note.title,
+						content: note.content,
+						isEncrypted: note.isEncrypted,
+					});
+				}catch(e){
+					console.log('encrypt failed for note: %s', note.title);
+				}
+			}
+			localStorage.setItem(KEY, '1');
+		},
 	},
 	data(){
 		return {
@@ -136,8 +167,13 @@ export default {
 	mounted(){
 		this.initUser();
 		this.initEncryptKey();
+		// 检查是否已经全部加密，如果没有的话，尝试转换
+		this.encryptAllNote();
 		this.$refs.encryptDialog.$on('hide', () => {
 			this.encryptDialog.show = false;
+		});
+		eventBus.$on('CRYPTO_UPDATE_KEY', () => {
+			this.encryptAllNote();
 		});
 	}
 
