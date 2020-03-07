@@ -40,7 +40,7 @@
 </template>
 
 
-<script>
+<script lang="ts">
 import { getLocalInfo,getRemoteInfo } from '../../common/user';
 import { getEncrypt, setEncrypt, setEncryptKey, decrypt, isKeyValid, encryptNote } from '../utils/crypto/main';
 import MyDialog from './base/Dialog.vue';
@@ -64,10 +64,10 @@ export default {
 	watch: {
 	},
 	methods: {
-		async initUser(){
+		async initUser(forceRemote:boolean = false){
 			let user = getLocalInfo();
 			console.log('get user from local');
-			if(!user){
+			if(!user || forceRemote){
 				console.log('no local user');
 				user = await getRemoteInfo();
 				console.log('get user from remote');
@@ -104,8 +104,8 @@ export default {
 				}, this.encryptDialog.form.keyValue);
 				this.encryptDialog.show = false;
 				this.encryptDialog.form.keyValue = [];
+				await this.initUser(true);
 				eventBus.$emit('CRYPTO_ON');
-				await this.initUser();
 			}else{
 				setEncryptKey(this.encryptDialog.form.keyValue);
 				const isValid = await isKeyValid();
@@ -172,7 +172,8 @@ export default {
 		this.$refs.encryptDialog.$on('hide', () => {
 			this.encryptDialog.show = false;
 		});
-		eventBus.$on('CRYPTO_UPDATE_KEY', () => {
+		eventBus.$on('CRYPTO_ON', () => {
+			console.log('crypto on');
 			this.encryptAllNote();
 		});
 	}

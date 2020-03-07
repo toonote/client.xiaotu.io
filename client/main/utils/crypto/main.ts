@@ -1,8 +1,6 @@
 import { getLocalInfo, setRemoteInfo } from '../../../common/user';
 import WebCrypto from '../crypto/WebCrypto';
 
-let _user:any;
-
 type Crypto = {
     iv: string,
     crypto: WebCrypto,
@@ -20,10 +18,8 @@ type EncryptConfig = {
 };
 
 export const getEncrypt = function():EncryptConfig{
-    if(!_user){
-        _user = getLocalInfo();
-    }
-    return JSON.parse(_user.encrypt || 'null');
+    const user = getLocalInfo();
+    return JSON.parse(user.encrypt || 'null');
 };
 
 export const getEncryptKey = function(){
@@ -39,24 +35,26 @@ export const setEncryptKey = function(key: string[]){
 export const isKeyValid = async function(){
     const encrypt = getEncrypt();
     let validateId = '';
+    const user = getLocalInfo();
     try{
-        validateId = await decrypt(_user.id, encrypt.validateString);
+        validateId = await decrypt(user.id, encrypt.validateString);
     }catch(e){
 
     }
-    return +validateId === _user.id;
+    return +validateId === user.id;
 };
 
 export const setEncrypt = async function(remoteEncrypt: EncryptConfig, key: string[]){
+    const user = getLocalInfo();
     setEncryptKey(key);
-    const validateString = await encrypt(_user.id, _user.id);
+    const validateString = await encrypt(user.id, user.id, true);
     remoteEncrypt.validateString = validateString;
     await setRemoteInfo({encrypt: JSON.stringify(remoteEncrypt)});
 };
 
-export async function encrypt(id: string, str: string){
+export async function encrypt(id: string, str: string, force:boolean = false){
     let encrypt = getEncrypt();
-    if(!encrypt || !encrypt.alg) return str;
+    if((!encrypt || !encrypt.alg) && !force) return str;
     let encryptKey = getEncryptKey();
 
     if(!crypto || crypto.iv !== id){

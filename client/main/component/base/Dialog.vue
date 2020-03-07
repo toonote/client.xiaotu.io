@@ -40,6 +40,7 @@ export default {
 
 <style scoped>
 .dialog{
+    font-family: "PingFang SC";
 	position: absolute;
 	z-index: 2;
 	left: 50%;
