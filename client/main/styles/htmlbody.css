@@ -117,7 +117,7 @@
 	font-size:13px;
 	margin-bottom: 28px;
 	padding:0 10px;
-	background:#F0F0F0;
+	background: var(--second-active-background-color);
 	border-left:3px solid var(--border-color);
 }
 .htmlBody blockquote p{
