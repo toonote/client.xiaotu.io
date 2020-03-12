@@ -171,7 +171,7 @@ export default {
             this.currentContextMenuCategoryId = categoryId;
             this.$refs.categoryContextMenu.show({
                 top: $event.pageY,
-                left: $event.pageX, 
+                left: $event.pageX,
             });
 		},
         hideCategoryContextMenu(){
@@ -183,7 +183,7 @@ export default {
             this.currentContextMenuNoteId = noteId;
             this.$refs.noteContextMenu.show({
                 top: $event.pageY,
-                left: $event.pageX, 
+                left: $event.pageX,
             });
         },
         hideNoteContextMenu(){
@@ -273,7 +273,7 @@ export default {
 			if(encrypt && encrypt.alg){
 				await encryptNote(newNote);
 			}
-			
+
             restClient.note.create(newNote).then(() => {
                 eventBus.$emit('NOTEBOOK_REFRESH');
             });
@@ -327,7 +327,7 @@ export default {
 <style scoped>
 h2 .operate{
 	float: right;
-	color:#585858;
+	color: var(--second-text-color);
 	text-decoration: none;
 	opacity: 0;
 	transition: opacity .4s;
@@ -362,7 +362,7 @@ h2:hover .operate{
 	transition: padding-top .4s ease-in-out, padding-bottom .4s ease-in-out;
 }
 .wrapper li.active{
-	background: #CECECE;
+	background: var(--active-background-color);
 }
 .wrapper li.movingUp{
 	padding-top: 24px;
@@ -372,15 +372,15 @@ h2:hover .operate{
 }
 .wrapper li.note::before{
 	padding-right:3px;
-	background-image:url(../images/icon-file.png);
+	background-image: var(--icon-file-url);
 }
 .wrapper li.folder::before{
 	padding-right:3px;
-	background-image:url(../images/icon-folder.png);
+	background-image: var(--icon-folder-url);
 }
 .wrapper li.folder-open::before{
 	padding-right:3px;
-	background-image:url(../images/icon-folder-open.png);
+	background-image: var(--icon-folder-open-url);
 }
 .wrapper li .categoryInput{
 	width: calc(100% - 70px);

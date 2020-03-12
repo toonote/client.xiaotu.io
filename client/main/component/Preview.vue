@@ -6,7 +6,7 @@
 	flex:1;
 	font-size:14px;
 	line-height: 28px;
-	background:#fff;
+	background: var(--background-color);
 }
 @import "../styles/htmlbody.css";
 </style>

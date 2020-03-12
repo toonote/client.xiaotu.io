@@ -6,9 +6,9 @@
 		<input type="search" v-model.trim="searchKeyword" placeholder="搜索..." />
 	</section>
 	<!-- 搜索结果展示 -->
-	<note-tree 
+	<note-tree
 		v-show="searchKeyword"
-		:notebook="currentNotebook" 
+		:notebook="currentNotebook"
 		:current-note="currentNote"
 	></note-tree>
 	<!-- 笔记列表展示 -->
@@ -87,9 +87,9 @@ export default {
 .sidebar{
 	-webkit-user-select: none;
 	user-select:none;
-	background:#F6F6F6;
-	border-right:1px solid #E0E0E0;
-	color:#585858;
+	background: var(--second-background-color);
+	border-right:1px solid var(--border-color);
+	color: var(--second-text-color);
 	font-family: "PingFang SC";
 	min-height:100%;
 	width:250px;
@@ -113,12 +113,13 @@ h2:hover .operate{
     border: 0 none;
     width: 100%;
     height: 28px;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid var(--border-color);
     background: transparent;
 	padding: 0 10px;
+	color: var(--second-text-color);
 }
 .searchWrapper input:focus{
-	background: white;
+	background: var(--background-color);
 	outline: 0 none;
 }
 </style>

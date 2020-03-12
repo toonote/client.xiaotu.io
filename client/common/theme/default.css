@@ -1,0 +1,36 @@
+:root{
+	--background-color: #fff;
+	--second-background-color: #F6F6F6;
+	--border-color: #e0e0e0;
+	--text-color: #444;
+	--second-text-color: #585858;
+	--active-background-color: #CECECE;
+	--second-active-background-color: #CECECE;
+
+	--icon-file-url: url(../../main/images/icon-file.png);
+	--icon-folder-url: url(../../main/images/icon-folder.png);
+	--icon-folder-open-url: url(../../main/images/icon-folder-open.png);
+}
+
+@media screen and (prefers-color-scheme: dark) {
+	:root{
+		--background-color: #333;
+		--second-background-color: #1A1A1A;
+		--border-color: #000;
+		--text-color: #999;
+		--second-text-color: #777;
+		--active-background-color: #333;
+		--second-active-background-color: #444;
+
+		--icon-file-url: url(../../main/images/icon-file-dark.png);
+		--icon-folder-url: url(../../main/images/icon-folder-dark.png);
+		--icon-folder-open-url: url(../../main/images/icon-folder-open-dark.png);
+	}
+	.ace_editor {
+		background-color: var(--background-color)!important;
+		color: var(--text-color)!important;
+	}
+	.ace_active-line{
+		background-color: var(--second-active-background-color)!important;
+	}
+}

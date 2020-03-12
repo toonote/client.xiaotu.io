@@ -20,8 +20,8 @@
 				<label class="tn-form-label">加密方式</label>
 				<input type="text" readonly :value="encryptDialog.form.alg" />
 			</div>
-			<div 
-				class="tn-form-item" 
+			<div
+				class="tn-form-item"
 				v-for="(label, $index) in encryptDialog.form.keyLabel"
 				:key="label"
 				>
@@ -123,7 +123,7 @@ export default {
 			const isValid = await isKeyValid();
 			if(!isValid) return;
 
-			const KEY = 'TOONOTE_ALL_NOTE_ENCRYPTED'; 
+			const KEY = 'TOONOTE_ALL_NOTE_ENCRYPTED';
 			const isAllEncrypted = +localStorage.getItem(KEY);
 			if(isAllEncrypted) return;
 			console.log('ready to encrypt all note.');
@@ -184,7 +184,7 @@ export default {
 .login{
 	padding:10px;
 	margin:0 auto;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid var(--border-color);
     position: relative;
 }
 .login .avatar{

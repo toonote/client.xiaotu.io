@@ -51,12 +51,15 @@ export default {
 
 </script>
 <style>
+@import "../common/theme/default.css";
+
 *{
     margin:0;
     padding:0;
 }
 html,body{
     height: 100%;
+    background: var(--background-color);
 }
 .icon::before{
 	content:' ';
@@ -79,6 +82,7 @@ html,body{
 }
 .mainContainer, .main{
     height: 100%;
+    background: var(--background-color);
 }
 .main{
     display: flex;
@@ -103,7 +107,7 @@ html,body{
     flex: 1;
     outline: 0 none;
     padding: 3px 5px;
-    border: 1px solid #ccc; 
+    border: 1px solid #ccc;
 }
 .tn-form .tn-form-item input[readonly]{
     background: #f0f0f0;
@@ -134,6 +138,6 @@ html,body{
     width: 100%;
     padding: 10px;
     border: 1px solid #8aab01;
-    background: #cddf88 
+    background: #cddf88;
 }
 </style>

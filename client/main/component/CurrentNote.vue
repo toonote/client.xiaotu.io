@@ -2,6 +2,7 @@
 <section class="currentNote">
     <transition name="slide-flex">
         <editor
+            class="editor"
             v-show="layout.editor"
             v-model="content"
             ref="editor"
@@ -11,9 +12,9 @@
         ></editor>
     </transition>
     <transition name="slide-flex">
-        <preview 
-            v-show="layout.preview" 
-            ref="preview" 
+        <preview
+            v-show="layout.preview"
+            ref="preview"
             :content="content"
             :layout="layout"
         ></preview>
@@ -120,5 +121,8 @@ export default {
     display: flex;
     flex: 1;
     overflow: hidden;
+}
+.editor{
+    border-color: var(--border-color);
 }
 </style>
