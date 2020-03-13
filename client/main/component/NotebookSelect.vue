@@ -7,7 +7,18 @@
 			v-show="!newNotebook.isCreating"
 			:key="notebook.id"
 			@click="switchCurrentNotebook(notebook.id)"
-		>{{notebook.title}}</li>
+		>
+			<span v-show="editingNotebookId!==notebook.id" @click.stop="editingNotebookId=notebook.id">{{notebook.title}}</span>
+			<input
+				class="titleInput notebookTitleInput"
+				v-show="editingNotebookId===notebook.id"
+				v-auto-focus
+				placeholder="笔记本标题"
+				:value="notebook.title"
+				@keydown.enter="renameNotebook(notebook, $event.target.value)"
+				@keydown.esc="editingNotebookId=''"
+				@click.stop
+			/></li>
 		<li
 			class="nootbook createNotebook"
 			:class="{creating:newNotebook.isCreating, placeholder:!newNotebook.isCreating}"
@@ -39,6 +50,7 @@ export default {
 	data(){
 		return {
 			currentNotebook: null,
+			editingNotebookId: '',
 			notebookList: [],
 			newNotebook: {
 				isCreating: false
@@ -84,7 +96,15 @@ export default {
 			const notebookList = parseResponse(await restClient.notebook.all());
 			notebookList.sort((n1, n2) => n1.order - n2.order);
 			this.notebookList = notebookList;
-		}
+		},
+		async renameNotebook(notebook, title){
+			if(!title) return;
+			await restClient.notebook.update(notebook.id, {
+				title,
+			});
+			notebook.title = title;
+			this.editingNotebookId = '';
+		},
 	},
 	async mounted(){
 		await this.getNotebookList();
@@ -192,6 +212,13 @@ export default {
 .notebookSelect ul > li.notebookList-enter-to,
 .notebookSelect ul > li.notebookList-leave{
 	opacity: 1;
+}
+.notebookSelect ul > li > span{
+	padding: 0 5px;
+}
+.notebookSelect ul > li > span:hover{
+	cursor: text;
+	background: #fff5cb;
 }
 
 .notebookTitleInput{

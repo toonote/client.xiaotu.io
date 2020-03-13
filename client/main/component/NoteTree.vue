@@ -44,6 +44,7 @@
     </ul>
     <v-contextmenu @hide="hideCategoryContextMenu" ref="categoryContextMenu">
 		<v-contextmenu-item @click="newNote('categoryMenu')">新建笔记</v-contextmenu-item>
+		<v-contextmenu-item @click="newCategory('categoryMenu')">新建分类</v-contextmenu-item>
 		<v-contextmenu-item @click="editCategoryName">重命名</v-contextmenu-item>
 		<v-contextmenu-item @click="deleteCategory">删除</v-contextmenu-item>
 	</v-contextmenu>
@@ -77,7 +78,23 @@ export default {
 				});
 			});
 			return ret;
-		}
+		},
+		noteList(){
+			if(!this.notebook || !this.notebook.categories) return [];
+			let ret = [];
+			this.notebook.categories.forEach((category) => {
+				ret = ret.concat(category.notes);
+			});
+			return ret;
+		},
+		maxCategoryOrder(){
+			if(!this.notebook || !this.notebook.categories) return 0;
+			return Math.max.apply(null, this.notebook.categories.map((c) => c.order));
+		},
+		maxNoteOrder(){
+			if(!this.notebook || !this.notebook.categories) return 0;
+			return Math.max.apply(null, this.noteList.map((n) => n.order));
+		},
 	},
 	watch: {
 	},
@@ -268,14 +285,14 @@ export default {
                 }
             });
 			if(!targetCategory) return;
-			// todo:order
 			const newNote = {
                 title: '新笔记',
-                content: '# ' + targetCategory.title + '\\新笔记',
+                content: '# 新笔记',
                 id: idGen(),
                 categoryId: targetCategory.id,
 				notebookId: this.notebook.id,
 				isEncrypted: 0,
+				order: this.maxNoteOrder + 1,
 			};
 			const encrypt = getEncrypt();
 			if(encrypt && encrypt.alg){
@@ -283,6 +300,18 @@ export default {
 			}
 
             restClient.note.create(newNote).then(() => {
+                eventBus.$emit('NOTEBOOK_REFRESH');
+            });
+        },
+        async newCategory(from){
+			const newCategory = {
+                title: '新分类',
+                id: idGen(),
+				notebookId: this.notebook.id,
+				order: this.maxCategoryOrder + 1,
+			};
+
+            restClient.category.create(newCategory).then(() => {
                 eventBus.$emit('NOTEBOOK_REFRESH');
             });
         },
