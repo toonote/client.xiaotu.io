@@ -16,8 +16,9 @@
             <input
                 class="titleInput categoryInput"
                 v-show="currentEditCategoryId===category.id"
+                v-auto-focus
                 :value="category.title"
-                @keydown.enter="categoryRename(category.id, $event.target.value)"
+                @keydown.enter="renameCategory(category, $event.target.value)"
                 @keydown.esc="currentEditCategoryId=''"
                 @click.stop
             />
@@ -43,7 +44,7 @@
     </ul>
     <v-contextmenu @hide="hideCategoryContextMenu" ref="categoryContextMenu">
 		<v-contextmenu-item @click="newNote('categoryMenu')">新建笔记</v-contextmenu-item>
-		<v-contextmenu-item>重命名</v-contextmenu-item>
+		<v-contextmenu-item @click="editCategoryName">重命名</v-contextmenu-item>
 		<v-contextmenu-item @click="deleteCategory">删除</v-contextmenu-item>
 	</v-contextmenu>
     <v-contextmenu @hide="hideNoteContextMenu" ref="noteContextMenu">
@@ -158,10 +159,16 @@ export default {
 		exitNotebook(){
 			exitNotebook();
 		},
-		categoryRename(categoryId, newTitle){
-			if(!newTitle) return;
+		editCategoryName(){
+			this.currentEditCategoryId = this.currentContextMenuCategoryId;
+		},
+		async renameCategory(category, title){
+			if(!title) return;
+			await restClient.category.update(category.id, {
+				title,
+			});
+			category.title = title;
 			this.currentEditCategoryId = '';
-			categoryRename(categoryId, newTitle);
 		},
 		showCategoryContextMenu($event, categoryId){
 			// console.log('contextmenu');
@@ -328,9 +335,9 @@ export default {
 			if(!this.notebook || !this.notebook.categories) return;
 			this.switchCurrentNote(noteId);
 		});
-		// eventHub.on('categoryRename', (categoryId) => {
+		// eventHub.on('renameCategory', (categoryId) => {
 		// 	this.currentEditCategoryId = categoryId;
-		// 	logger('categoryRename', categoryId);
+		// 	logger('renameCategory', categoryId);
 		// });
 	}
 };

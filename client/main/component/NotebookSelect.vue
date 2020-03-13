@@ -18,6 +18,7 @@
 			<input
 				class="titleInput notebookTitleInput"
 				v-show="newNotebook.isCreating"
+				v-auto-focus
 				placeholder="新建笔记本"
 				@keydown.enter="createNotebook($event.target.value)"
 				@keydown.esc="newNotebook.isCreating=false"
