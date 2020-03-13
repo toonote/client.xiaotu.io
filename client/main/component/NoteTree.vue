@@ -1,7 +1,6 @@
 <template>
 <section class="wrapper">
-    <h2>{{notebook.title}} <a class="operate" href="#" @click.prevent="exitNotebook">切换</a></h2>
-    <ul>
+    <ul v-if="notebook">
         <li
             class="icon folder"
             draggable="true"
@@ -325,22 +324,10 @@ export default {
 };
 </script>
 <style scoped>
-h2 .operate{
-	float: right;
-	color: var(--second-text-color);
-	text-decoration: none;
-	opacity: 0;
-	transition: opacity .4s;
-	padding-right: 10px;
-}
-h2:hover .operate{
-	opacity: 1;
-}
 .wrapper{
 	line-height: 24px;
-	padding-top: 10px;
+	/*padding-top: 10px;*/
 }
-.wrapper h2,
 .wrapper .notFound{
 	font-size:12px;
 	padding-left:15px;

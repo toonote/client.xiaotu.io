@@ -1,8 +1,9 @@
 <template>
     <div class="container">
+        <h2 v-if="notebook">{{notebook.title}} <a class="operate" href="#" @click.prevent="exitNotebook">切换</a></h2>
         <!-- 笔记列表展示 -->
         <note-tree
-            :notebook="notebook" 
+            :notebook="notebook"
             :current-note="currentNote"
         ></note-tree>
     </div>
@@ -47,6 +48,11 @@ export default {
     },
     methods: {
         async switchNotebook(notebookId: string){
+            if(!notebookId){
+                this.notebook = null;
+                this.noteList = [];
+                return;
+            }
             let renderNotebook: Notebook;
             const notebook = parseResponse(await restClient.notebook.find(notebookId));
             renderNotebook = {
@@ -74,6 +80,9 @@ export default {
             this.noteList = notes;
             await decryptNoteList(notes);
         },
+        exitNotebook(){
+            eventBus.$emit('NOTEBOOK_SWITCH', '');
+        },
     },
     mounted(){
         eventBus.$on('NOTEBOOK_SWITCH', (notebookId) => {
@@ -89,3 +98,25 @@ export default {
     }
 };
 </script>
+
+<style scoped>
+.container{
+    margin-top: 10px;
+}
+h2{
+    font-size:12px;
+    padding-left:15px;
+    font-weight: normal;
+}
+h2 .operate{
+    float: right;
+    color: var(--second-text-color);
+    text-decoration: none;
+    opacity: 0;
+    transition: opacity .4s;
+    padding-right: 10px;
+}
+h2:hover .operate{
+    opacity: 1;
+}
+</style>

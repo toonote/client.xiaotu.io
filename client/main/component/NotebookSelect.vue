@@ -29,8 +29,7 @@
 </section>
 </template>
 
-
-<script>
+<script lang="ts">
 import restClient, {parseResponse} from '../utils/restClient';
 import idGen from '../utils/idGen';
 import eventBus from '../utils/eventBus';
@@ -88,8 +87,12 @@ export default {
 	},
 	async mounted(){
 		this.getNotebookList();
-		// recoverLastState();
-
+		eventBus.$on('NOTEBOOK_SWITCH', (notebookId: string) => {
+			if(!notebookId){
+				this.currentNotebook = null;
+				localStorage.setItem('TOONOTE-LAST-NOTEBOOK-ID', '');
+			}
+		});
 	}
 };
 </script>
