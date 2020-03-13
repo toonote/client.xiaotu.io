@@ -47,6 +47,7 @@ export default {
     },
     watch:{
         content: throttle(async function(content: string){
+            if(!this.currentNote) return;
             if(content === this.currentNote.content) return;
             const {title} = parseTitle(content);
 
@@ -109,9 +110,15 @@ export default {
         eventBus.$on('NOTE_SWITCH', (noteId: string) => {
             this.switchNote(noteId);
         });
+
         eventBus.$on('CRYPTO_UPDATE_KEY', async () => {
             await decryptNote(this.currentNote);
             this.content = this.currentNote.content;
+        });
+
+        eventBus.$on('NOTEBOOK_SWITCH', () => {
+            this.currentNote = null;
+            this.content = '';
         });
     }
 }

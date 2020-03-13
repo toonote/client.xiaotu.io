@@ -151,10 +151,9 @@ export default {
 		},
 		switchCurrentNote(noteId){
 			if(noteId === this.currentNoteId) return;
-            // stat.ga('send', 'event', 'note', 'switchCurrentNote', 'click');
-			console.log('switchCurrentNote');
             eventBus.$emit('NOTE_SWITCH', noteId);
             this.currentNoteId = noteId;
+            localStorage.setItem('TOONOTE-LAST-NOTE-ID', noteId);
 		},
 		exitNotebook(){
 			exitNotebook();
@@ -323,6 +322,11 @@ export default {
 		eventBus.$on('NOTE_REQUEST_CREATE', () => {
 			if(!this.notebook || !this.notebook.categories) return;
 			this.newNote();
+		});
+
+		eventBus.$on('NOTE_REQUEST_SWITCH', (noteId) => {
+			if(!this.notebook || !this.notebook.categories) return;
+			this.switchCurrentNote(noteId);
 		});
 		// eventHub.on('categoryRename', (categoryId) => {
 		// 	this.currentEditCategoryId = categoryId;

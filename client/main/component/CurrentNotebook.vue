@@ -95,6 +95,13 @@ export default {
             this.notebook = renderNotebook;
             this.noteList = notes;
             await decryptNoteList(notes);
+
+            // 恢复前一次使用的笔记
+            const lastNoteId = localStorage.getItem('TOONOTE-LAST-NOTE-ID');
+            if(lastNoteId && this.noteList.some((note) => note.id === lastNoteId)){
+                eventBus.$emit('NOTE_REQUEST_SWITCH', lastNoteId);
+            }
+
             // 如果没有笔记，新建一个
             if(!this.noteList.length){
                 eventBus.$emit('NOTE_REQUEST_CREATE');
@@ -124,9 +131,10 @@ export default {
     margin-top: 10px;
 }
 h2{
-    font-size:12px;
+    font-size:13px;
     padding-left:15px;
     font-weight: normal;
+    line-height: 1.5em;
 }
 h2 .operate{
     float: right;

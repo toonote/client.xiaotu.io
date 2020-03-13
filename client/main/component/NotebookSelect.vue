@@ -86,7 +86,14 @@ export default {
 		}
 	},
 	async mounted(){
-		this.getNotebookList();
+		await this.getNotebookList();
+		// 自动打开上次使用的笔记本
+		const lastNotebookId = localStorage.getItem('TOONOTE-LAST-NOTEBOOK-ID');
+		if(lastNotebookId){
+			this.switchCurrentNotebook(lastNotebookId);
+		}
+
+		// 关闭笔记本，回到选择界面
 		eventBus.$on('NOTEBOOK_SWITCH', (notebookId: string) => {
 			if(!notebookId){
 				this.currentNotebook = null;
