@@ -251,15 +251,18 @@ export default {
                     if(category.id === this.currentContextMenuCategoryId){
                         targetCategory = category;
                     }
-                }else{
+                }else if(from === 'noteMenu'){
                     category.notes.forEach((note) => {
                         if(note.id === this.currentContextMenuNoteId){
                             targetCategory = category;
                         }
                     });
+                }else{
+                	targetCategory = category;
                 }
             });
 			if(!targetCategory) return;
+			// todo:order
 			const newNote = {
                 title: '新笔记',
                 content: '# ' + targetCategory.title + '\\新笔记',
@@ -315,6 +318,11 @@ export default {
 		eventBus.$on('NOTE_TITLE_CHANGE', (title) => {
 			if(!this.currentNote) return;
 			this.currentNote.title = title;
+		});
+
+		eventBus.$on('NOTE_REQUEST_CREATE', () => {
+			if(!this.notebook || !this.notebook.categories) return;
+			this.newNote();
 		});
 		// eventHub.on('categoryRename', (categoryId) => {
 		// 	this.currentEditCategoryId = categoryId;

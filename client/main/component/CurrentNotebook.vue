@@ -13,6 +13,7 @@ import NoteTree from './NoteTree.vue';
 import eventBus from '../utils/eventBus';
 import restClient, {parseResponse} from '../utils/restClient';
 import { decryptNoteList } from '../utils/crypto/main';
+import idGen from '../utils/idGen';
 
 type Note = {
     title: string,
@@ -61,12 +62,27 @@ export default {
                 order: notebook.order,
                 categories: [],
             };
-            const categories = parseResponse(await restClient.category.all({
+            let categories = parseResponse(await restClient.category.all({
                 where: JSON.stringify({notebookId: notebook.id})
             })).sort((c1, c2) => c1.order - c2.order);
+
+            // 如果没有分类，新建一个
+            if(!categories.length){
+                await restClient.category.create({
+                    id: idGen(),
+                    notebookId: notebook.id,
+                    title: '未分类',
+                    order: 1,
+                });
+                categories = parseResponse(await restClient.category.all({
+                    where: JSON.stringify({notebookId: notebook.id})
+                })).sort((c1, c2) => c1.order - c2.order);
+            }
+
             const notes = parseResponse(await restClient.note.all({
                 where: JSON.stringify({notebookId: notebook.id})
             })).sort((n1, n2) => n1.order - n2.order);
+
             renderNotebook.categories = categories.map((category) => {
                 const notesInCategory = notes.filter((note) => note.categoryId === category.id);
                 return {
@@ -79,6 +95,10 @@ export default {
             this.notebook = renderNotebook;
             this.noteList = notes;
             await decryptNoteList(notes);
+            // 如果没有笔记，新建一个
+            if(!this.noteList.length){
+                eventBus.$emit('NOTE_REQUEST_CREATE');
+            }
         },
         exitNotebook(){
             eventBus.$emit('NOTEBOOK_SWITCH', '');
