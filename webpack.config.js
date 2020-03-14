@@ -4,6 +4,7 @@ const webpack = require('webpack');
 const VueLoaderPlugin = require('vue-loader').VueLoaderPlugin;
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const HtmlWebpackHarddiskPlugin = require('html-webpack-harddisk-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
     mode: process.env.NODE_ENV === 'production'?'production':'development',
@@ -73,7 +74,7 @@ module.exports = {
     devtool: '#eval-source-map',
     plugins: [
         new webpack.DefinePlugin({
-            'TOONOTE_VERSION': '"' + require(path.join(__dirname, './package.json')).version + '"', 
+            'TOONOTE_VERSION': '"' + require(path.join(__dirname, './package.json')).version + '"',
         }),
         new VueLoaderPlugin(),
         new HtmlWebpackPlugin({
@@ -97,6 +98,10 @@ module.exports = {
             chunks: ['main'],
             alwaysWriteToDisk: true
         }),
+        new CopyPlugin([{
+            from: path.join(__dirname, './client/static'),
+            to: path.join(__dirname, './dist'),
+        }]),
         new HtmlWebpackHarddiskPlugin(),
     ]
 }
