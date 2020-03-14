@@ -3,7 +3,7 @@
     <transition name="slide-flex">
         <editor
             class="editor"
-            v-show="layout.editor"
+            v-show="layout.editor && currentNote"
             v-model="content"
             ref="editor"
             @attachment="onAttachment"
@@ -13,7 +13,7 @@
     </transition>
     <transition name="slide-flex">
         <preview
-            v-show="layout.preview"
+            v-show="layout.preview && currentNote"
             ref="preview"
             :content="content"
             :layout="layout"
@@ -128,6 +128,7 @@ export default {
     display: flex;
     flex: 1;
     overflow: hidden;
+    background:url('../images/bg.png') center 40% no-repeat;
 }
 .editor{
     border-color: var(--border-color);
