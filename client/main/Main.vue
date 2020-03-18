@@ -1,7 +1,7 @@
 <template>
-<section class="mainContainer">
+<section tabindex="1" class="mainContainer" @keydown="hotkey">
     <div class="main" :class="{withSidebar:layout.sidebar}">
-		<transition name="slide">
+		<transition name="slide-flex">
 			<sidebar v-show="layout.sidebar"></sidebar>
 		</transition>
         <current-note :layout="layout"></current-note>
@@ -45,6 +45,33 @@ export default {
         });
     },
     methods:{
+        hotkey($event){
+            switch($event.which){
+                // meta+1
+                case 49:
+                    if(!$event.metaKey) break;
+                    this.layout.sidebar = !this.layout.sidebar;
+                    $event.preventDefault();
+                    break;
+                // meta+2
+                case 50:
+                    if(!$event.metaKey) break;
+                    this.layout.editor = !this.layout.editor;
+                    $event.preventDefault();
+                    break;
+                // meta+3
+                case 51:
+                    if(!$event.metaKey) break;
+                    this.layout.preview = !this.layout.preview;
+                    $event.preventDefault();
+                    break;
+                // meta+s
+                case 83:
+                    if(!$event.metaKey) break;
+                    $event.preventDefault();
+                    break;
+            }
+        },
     }
 };
 
@@ -138,5 +165,20 @@ html,body{
     padding: 10px;
     border: 1px solid #8aab01;
     background: #cddf88;
+}
+
+/*layout动画*/
+.slide-enter-active, .slide-leave-active {
+    transition: width .5s;
+}
+.slide-enter, .slide-leave-active {
+    width: 0!important;
+}
+.slide-flex-enter-active, .slide-flex-leave-active {
+    transition: flex .5s;
+    min-width: 0;
+}
+.slide-flex-enter, .slide-flex-leave-active {
+    flex: 0!important;
 }
 </style>
