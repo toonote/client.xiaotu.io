@@ -7,7 +7,6 @@
         <current-note :layout="layout"></current-note>
 	</div>
 	<notebook-select v-show="!currentNotebook"></notebook-select>
-	<!-- <version></version> -->
 </section>
 </template>
 <script lang="ts">

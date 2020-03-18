@@ -14,7 +14,7 @@
 		</div>
 	</div>
 
-	<my-dialog v-show="encryptDialog.show" ref="encryptDialog">
+	<my-dialog v-show="encryptDialog.show" ref="encryptDialog" @hide="encryptDialog.show=false">
 		<form class="tn-form">
 			<div class="tn-form-item">
 				<label class="tn-form-label">加密方式</label>
@@ -169,9 +169,6 @@ export default {
 		this.initEncryptKey();
 		// 检查是否已经全部加密，如果没有的话，尝试转换
 		this.encryptAllNote();
-		this.$refs.encryptDialog.$on('hide', () => {
-			this.encryptDialog.show = false;
-		});
 		eventBus.$on('CRYPTO_ON', () => {
 			console.log('crypto on');
 			this.encryptAllNote();

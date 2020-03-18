@@ -51,7 +51,7 @@
     <v-contextmenu @hide="hideNoteContextMenu" ref="noteContextMenu">
 		<v-contextmenu-item @click="openNote">打开</v-contextmenu-item>
 		<v-contextmenu-item @click="deleteNote">删除</v-contextmenu-item>
-		<v-contextmenu-item>历史版本</v-contextmenu-item>
+		<v-contextmenu-item @click="showHistory">历史版本</v-contextmenu-item>
 		<v-contextmenu-item @click="newNote('noteMenu')">新建笔记</v-contextmenu-item>
 	</v-contextmenu>
 </section>
@@ -73,6 +73,18 @@ export default {
 			this.notebook.categories.forEach((category) => {
 				category.notes.forEach((note) => {
 					if(note.id === this.currentNoteId){
+						ret = note;
+					}
+				});
+			});
+			return ret;
+		},
+		currentContextNote(){
+			let ret = null;
+			if(!this.notebook || !this.notebook.categories) return ret;
+			this.notebook.categories.forEach((category) => {
+				category.notes.forEach((note) => {
+					if(note.id === this.currentContextMenuNoteId){
 						ret = note;
 					}
 				});
@@ -210,6 +222,11 @@ export default {
         },
         hideNoteContextMenu(){
             this.currentContextMenuNoteId = '';
+        },
+        showHistory(){
+        	if(!this.currentContextNote) return;
+        	eventBus.$emit('NOTE_HISTORY_SHOW', this.currentContextNote);
+        	this.hideNoteContextMenu();
         },
 		dragStart(e, type, noteOrCategory){
 			if(this.currentMovingNote || this.currentMovingCategory) return;

@@ -6,10 +6,12 @@
             :notebook="notebook"
             :current-note="currentNote"
         ></note-tree>
+        <note-history></note-history>
     </div>
 </template>
 <script lang="ts">
 import NoteTree from './NoteTree.vue';
+import NoteHistory from './NoteHistory.vue';
 import eventBus from '../utils/eventBus';
 import restClient, {parseResponse} from '../utils/restClient';
 import { decryptNoteList } from '../utils/crypto/main';
@@ -39,6 +41,7 @@ type Notebook = {
 export default {
     components: {
         NoteTree,
+        NoteHistory,
     },
     data(){
         return {
