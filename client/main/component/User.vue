@@ -78,6 +78,7 @@ export default {
 				}
 			}
 			this.userData = user;
+			this.setupTimer();
 		},
 		setupTimer(){
 			// 5分钟尝试更新一次用户信息
