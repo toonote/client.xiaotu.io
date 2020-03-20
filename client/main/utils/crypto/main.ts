@@ -17,9 +17,14 @@ type EncryptConfig = {
     validateString: string,
 };
 
+let encryptCache;
+
 export const getEncrypt = function():EncryptConfig{
     const user = getLocalInfo();
-    return JSON.parse(user.encrypt || 'null');
+    if(user){
+        encryptCache = JSON.parse(user.encrypt || 'null');
+    }
+    return encryptCache;
 };
 
 export const getEncryptKey = function(){
@@ -36,6 +41,7 @@ export const isKeyValid = async function(){
     const encrypt = getEncrypt();
     let validateId = '';
     const user = getLocalInfo();
+    if(!user) return false;
     try{
         validateId = await decrypt(user.id, encrypt.validateString);
     }catch(e){
@@ -95,7 +101,7 @@ export async function decryptNoteList(noteList: any[]){
         try{
             note.title = await decrypt(note.id, note.title);
         }catch(e){
-                    
+
         }
     }
 };
@@ -109,7 +115,7 @@ export async function decryptNote(note: any){
         note.title = await decrypt(note.id, note.title);
         note.content= await decrypt(note.id, note.content);
     }catch(e){
-        console.log('decrypt failed, maybe not encrypted:' + e.message);    
+        console.log('decrypt failed, maybe not encrypted:' + e.message);
     }
     console.log(note);
 };
@@ -121,7 +127,7 @@ export async function encryptNote(note: any){
         note.content= await encrypt(note.id, note.content);
         note.isEncrypted = 1;
     }catch(e){
-        console.log('decrypt failed, maybe not encrypted:' + e.message);    
+        console.log('decrypt failed, maybe not encrypted:' + e.message);
     }
-    console.log(note); 
+    console.log(note);
 }
