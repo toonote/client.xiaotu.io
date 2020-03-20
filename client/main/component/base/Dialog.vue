@@ -1,9 +1,9 @@
 <template>
-<section 
-    tabindex="1" 
-    class="mask" 
-    @keydown.esc="hideDialog" 
-    @click="hideDialog" 
+<section
+    tabindex="1"
+    class="mask"
+    @keydown.esc="hideDialog"
+    @click="hideDialog"
     v-show="show"
     ref="dialog"
 >
@@ -40,7 +40,6 @@ export default {
 
 <style scoped>
 .dialog{
-    font-family: "PingFang SC";
 	position: absolute;
 	z-index: 2;
 	left: 50%;

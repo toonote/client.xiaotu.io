@@ -1,6 +1,5 @@
 <style scoped>
 .preview{
-	font-family: "PingFang SC";
 	height:100%;
 	overflow-y:auto;
 	flex:1;

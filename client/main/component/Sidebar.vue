@@ -90,7 +90,6 @@ export default {
 	background: var(--second-background-color);
 	border-right:1px solid var(--border-color);
 	color: var(--second-text-color);
-	font-family: "PingFang SC";
 	min-height:100%;
 	width:250px;
 	flex: 250px 0 0;
