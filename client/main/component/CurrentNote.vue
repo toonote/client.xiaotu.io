@@ -46,6 +46,12 @@ export default {
         }
     },
     watch:{
+        layout: {
+            deep: true,
+            handler(){
+                this.$refs.editor.resize();
+            },
+        },
         content: throttle(async function(content: string){
             if(!this.currentNote) return;
             if(content === this.currentNote.content) return;
@@ -120,6 +126,8 @@ export default {
             this.currentNote = null;
             this.content = '';
         });
+
+        this.$refs.editor.resize();
     }
 }
 </script>
