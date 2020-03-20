@@ -1,7 +1,11 @@
 <template>
 <section tabindex="1" class="mainContainer" @keydown="hotkey" ref="main">
     <div class="main" :class="{withSidebar:layout.sidebar}">
-		<transition name="slide-flex">
+		<transition
+            name="slide-flex"
+            @after-enter="layoutChange"
+            @after-leave="layoutChange"
+        >
 			<sidebar v-show="layout.sidebar"></sidebar>
 		</transition>
         <current-note :layout="layout"></current-note>
@@ -44,14 +48,6 @@ export default {
             this.currentNotebook = notebookId;
         });
     },
-    watch:{
-        layout: {
-            deep: true,
-            handler(){
-                this.$refs.main.focus();
-            },
-        },
-    },
     methods:{
         hotkey($event){
             switch($event.which){
@@ -79,6 +75,10 @@ export default {
                     $event.preventDefault();
                     break;
             }
+        },
+        layoutChange(){
+            eventBus.$emit('LAYOUT_CHANGE_AFTER');
+            this.$refs.main.focus();
         },
     }
 };

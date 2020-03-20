@@ -1,5 +1,5 @@
 <template>
-<section class="wrapper">
+<section class="wrapper" ref="wrapper">
     <ul v-if="notebook">
         <li
             class="icon folder"
@@ -180,6 +180,8 @@ export default {
 			};
 		},
 		switchCurrentNote(noteId){
+			this.hideNoteContextMenu();
+			this.hideCategoryContextMenu();
 			if(noteId === this.currentNoteId) return;
             eventBus.$emit('NOTE_SWITCH', noteId);
             this.currentNoteId = noteId;
@@ -210,18 +212,32 @@ export default {
 		},
         hideCategoryContextMenu(){
             this.currentContextMenuCategoryId = '';
+            this.$refs.categoryContextMenu.hide();
         },
 		showNoteContextMenu($event, noteId){
 			// console.log('contextmenu');
 			//stat.ga('send', 'event', 'note', 'showNoteContextMenu');
             this.currentContextMenuNoteId = noteId;
+            const top = this.getContextMenuTop(this.$refs.noteContextMenu, $event.pageY);
             this.$refs.noteContextMenu.show({
-                top: $event.pageY,
-                left: $event.pageX,
+                top,
+                left: $event.pageX + 5,
             });
         },
         hideNoteContextMenu(){
             this.currentContextMenuNoteId = '';
+            this.$refs.noteContextMenu.hide();
+        },
+        getContextMenuTop(contextMenu, pageY){
+        	debugger;
+        	const fullHeightY = contextMenu.$el.offsetHeight + pageY;
+        	const wrapperHeightY = this.$refs.wrapper.offsetTop + this.$refs.wrapper.offsetHeight;
+
+        	if(fullHeightY < wrapperHeightY){
+        		return pageY;
+        	}else{
+        		return wrapperHeightY - contextMenu.$el.offsetHeight;
+        	}
         },
         showHistory(){
         	if(!this.currentContextNote) return;

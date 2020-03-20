@@ -1,6 +1,9 @@
 <template>
 <section class="currentNote">
-    <transition name="slide-flex">
+    <transition name="slide-flex"
+        @after-enter="layoutChange"
+        @after-leave="layoutChange"
+    >
         <editor
             class="editor"
             v-show="layout.editor && currentNote"
@@ -11,7 +14,10 @@
             :tn-event="tnEvent"
         ></editor>
     </transition>
-    <transition name="slide-flex">
+    <transition name="slide-flex"
+        @after-enter="layoutChange"
+        @after-leave="layoutChange"
+    >
         <preview
             v-show="layout.preview && currentNote"
             ref="preview"
@@ -46,12 +52,6 @@ export default {
         }
     },
     watch:{
-        layout: {
-            deep: true,
-            handler(){
-                this.$refs.editor.resize();
-            },
-        },
         content: throttle(async function(content: string){
             if(!this.currentNote) return;
             if(content === this.currentNote.content) return;
@@ -110,7 +110,10 @@ export default {
             await decryptNote(note);
             this.currentNote = note;
             this.content = note.content;
-        }
+        },
+        layoutChange(){
+            eventBus.$emit('LAYOUT_CHANGE_AFTER');
+        },
     },
     mounted(){
         eventBus.$on('NOTE_SWITCH', (noteId: string) => {
@@ -125,6 +128,10 @@ export default {
         eventBus.$on('NOTEBOOK_SWITCH', () => {
             this.currentNote = null;
             this.content = '';
+        });
+
+        eventBus.$on('LAYOUT_CHANGE_AFTER', () => {
+            this.$refs.editor.resize();
         });
 
         this.$refs.editor.resize();
