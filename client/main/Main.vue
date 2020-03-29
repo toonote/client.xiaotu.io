@@ -74,6 +74,11 @@ export default {
                     if(!$event.metaKey) break;
                     $event.preventDefault();
                     break;
+                case 78:
+                    if(!$event.metaKey) break;
+                    eventBus.$emit('NOTE_REQUEST_CREATE');
+                    $event.preventDefault();
+                    break;
             }
         },
         layoutChange(){

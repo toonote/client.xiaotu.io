@@ -1,9 +1,26 @@
 <template>
     <div class="container">
-        <h2 v-if="notebook">{{notebook.title}} <a class="operate" href="#" @click.prevent="exitNotebook">切换</a></h2>
+        <!-- 搜索框开始 -->
+        <section class="searchWrapper">
+            <input type="search" v-model.trim="searchKeyword" placeholder="搜索..." />
+        </section>
+        <!-- 搜索框结束 -->
+        <!-- 笔记本标题 -->
+        <h2 v-if="notebook && !searchKeyword">{{notebook.title}} <a class="operate" href="#" @click.prevent="exitNotebook">切换</a></h2>
         <!-- 笔记列表展示 -->
         <note-tree
+            v-show="!searchKeyword"
             :notebook="notebook"
+            :current-note="currentNote"
+        ></note-tree>
+        <!-- 搜索结果展示 -->
+        <h2 v-if="searchKeyword">
+            <span v-show="searchNoteList.length">搜索结果</span>
+            <span v-show="!searchNoteList.length">搜的什么鬼？一条都没有！</span>
+        </h2>
+        <note-tree
+            v-show="searchKeyword"
+            :notebook="searchNotebook"
             :current-note="currentNote"
         ></note-tree>
         <note-history></note-history>
@@ -48,7 +65,19 @@ export default {
             notebook: {},
             currentNote: null,
             noteList: [],
+            searchKeyword: '',
+            searchNotebook: {},
+            searchNoteList: [],
         };
+    },
+    watch: {
+        searchKeyword(){
+            if(this.searchKeyword){
+                this.search(this.searchKeyword);
+            }else{
+                this.searchNotebook = {};
+            }
+        }
     },
     methods: {
         async switchNotebook(notebookId: string){
@@ -113,6 +142,31 @@ export default {
         exitNotebook(){
             eventBus.$emit('NOTEBOOK_SWITCH', '');
         },
+        search(keyword){
+            this.searchNoteList = [];
+            this.searchNotebook = {};
+            this.notebook.categories.forEach((category) => {
+                const searchCategory = {
+                    id: category.id,
+                    title: category.title,
+                    order: category.order,
+                    notes: [],
+                };
+                searchCategory.notes = category.notes.filter((note) => {
+                    const find = note.title.toLowerCase().indexOf(keyword.toLowerCase()) > -1;
+                    if(find){
+                        this.searchNoteList.push(note);
+                    }
+                    return find;
+                });
+                if(searchCategory.notes.length){
+                    if(!this.searchNotebook.categories){
+                        this.searchNotebook.categories = [];
+                    }
+                    this.searchNotebook.categories.push(searchCategory);
+                }
+            });
+        },
     },
     mounted(){
         eventBus.$on('NOTEBOOK_SWITCH', (notebookId) => {
@@ -131,9 +185,27 @@ export default {
 
 <style scoped>
 .container{
-    margin-top: 10px;
+    /*margin-top: 10px;*/
 }
+
+.searchWrapper input{
+    -webkit-appearance: textfield;
+    display: block;
+    border: 0 none;
+    width: 100%;
+    height: 28px;
+    border-bottom: 1px solid var(--border-color);
+    background: transparent;
+    padding: 0 10px;
+    color: var(--second-text-color);
+}
+.searchWrapper input:focus{
+    background: var(--background-color);
+    outline: 0 none;
+}
+
 h2{
+    margin-top: 10px;
     font-size:13px;
     padding-left:15px;
     font-weight: normal;
