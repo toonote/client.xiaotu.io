@@ -7,7 +7,7 @@
 		<a v-else v-on:click="doLogin" href="#">点击登录</a>
 	</div>
 	<div class="levelWrapper">
-		<!-- <div class="label">VIP</div> -->
+		<div class="label" @click="switchTheme()">{{theme}}</div>
 		<div class="label" @click="encryptDialog.show=true">
 			<span v-if="isEncrypted">已加密</span>
 			<a v-else>未加密</a>
@@ -52,6 +52,10 @@ export default {
 		MyDialog,
 	},
 	computed: {
+		theme(){
+			const themeList = ['auto', 'light', 'dark'];
+			return themeList[this.themeIndex % themeList.length];
+		},
 		encrypt(){
 			if(!this.userData.encrypt) return false;
 			const encrypt = JSON.parse(this.userData.encrypt);
@@ -64,6 +68,15 @@ export default {
 	watch: {
 	},
 	methods: {
+		switchTheme(index){
+			if(typeof index !== 'undefined'){
+				this.themeIndex = index;
+			}else{
+				this.themeIndex++;
+			}
+			eventBus.$emit('THEME_CHANGE', this.theme);
+			localStorage.setItem('TOONOTE-THEME-INDEX', this.themeIndex);
+		},
 		async initUser(forceRemote:boolean = false){
 			let user = getLocalInfo();
 			console.log('get user from local');
@@ -154,6 +167,7 @@ export default {
 	data(){
 		return {
 			userData: {},
+			themeIndex: +localStorage.getItem('TOONOTE-THEME-INDEX') || 0,
 			encryptDialog: {
 				show: false,
 				form: {
@@ -170,6 +184,7 @@ export default {
 		this.initEncryptKey();
 		// 检查是否已经全部加密，如果没有的话，尝试转换
 		this.encryptAllNote();
+		this.switchTheme(this.themeIndex);
 		eventBus.$on('CRYPTO_ON', () => {
 			console.log('crypto on');
 			this.encryptAllNote();

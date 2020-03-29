@@ -22,6 +22,9 @@ import axios from 'axios';
 
 declare var process:any
 
+let isAutoTheme = true;
+let mq, handler;
+
 export default {
     data(){
         return {
@@ -43,9 +46,12 @@ export default {
         NotebookSelect,
         CurrentNote,
     },
-    mounted(){
+    created(){
         eventBus.$on('NOTEBOOK_SWITCH', (notebookId) => {
             this.currentNotebook = notebookId;
+        });
+        eventBus.$on('THEME_CHANGE', (theme) => {
+            this.setTheme(theme);
         });
     },
     methods:{
@@ -84,6 +90,44 @@ export default {
         layoutChange(){
             eventBus.$emit('LAYOUT_CHANGE_AFTER');
             this.$refs.main.focus();
+        },
+        setTheme(theme){
+            const lastAuto = isAutoTheme;
+            isAutoTheme = theme === 'auto';
+            // 由自动转为非自动
+            if(lastAuto && !isAutoTheme){
+                console.log('auto -> no auto, mq:', mq);
+                if(mq){
+                    mq.removeListener(handler);
+                    handler = undefined;
+                    mq = undefined;
+                }
+            }
+            // 由非自动转为自动
+            if(!lastAuto && isAutoTheme){
+                console.log('no auto -> auto, mq:', mq);
+                mq = window.matchMedia('(prefers-color-scheme: dark)');
+                handler = (mediaQuery) => {
+                    if(mediaQuery.matches){
+                        this.changeTheme('dark');
+                    }else{
+                        this.changeTheme('light');
+                    }
+                };
+                mq.addListener(handler);
+            }
+            this.changeTheme(theme);
+        },
+        changeTheme(theme){
+            if(!theme || theme === 'auto'){
+                if(window.matchMedia('(prefers-color-scheme: dark)').matches){
+                    theme = 'dark';
+                }else{
+                    theme = 'light';
+                }
+            }
+            document.querySelector(':root').dataset.theme = theme;
+            eventBus.$emit('THEME_CHANGE_AFTER');
         },
     }
 };
