@@ -104,7 +104,7 @@ export default {
 			return Math.max.apply(null, this.notebook.categories.map((c) => c.order));
 		},
 		maxNoteOrder(){
-			if(!this.notebook || !this.notebook.categories) return 0;
+			if(!this.notebook || !this.notebook.categories || !this.noteList.length) return 0;
 			return Math.max.apply(null, this.noteList.map((n) => n.order));
 		},
 	},
